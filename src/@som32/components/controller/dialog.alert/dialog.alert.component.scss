@@ -1,0 +1,38 @@
+@import "src/@fuse/scss/fuse";
+
+.dialog-alert {
+
+    width: 450px;
+    min-width: 250px;
+
+    .mat-dialog-container {
+        padding: 0;
+
+        mat-form-field {
+            width: 100%;
+        }
+    }
+
+    .dialog-content-wrapper {
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+
+        .title {
+            margin-right: 10mm;
+        }
+    }
+
+    .desc {
+        margin-top: -10px;
+        font-size: 4.2mm;
+        line-height: 6.8mm;
+        word-wrap: break-word;
+    }
+
+    .message {
+        width: 100%;
+        font-size: 5mm;
+        text-align: center;
+    }
+}

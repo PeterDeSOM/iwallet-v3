@@ -1,0 +1,47 @@
+<div class="dialog-content-wrapper">
+    <mat-toolbar class="mat-accent m-0">
+        <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">{{ !!title ? title : 'Password verification' }}</span>
+            <button mat-icon-button (click)="cancel()" aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div mat-dialog-content class="p-24 m-0" fusePerfectScrollbar>
+        <form [formGroup]="formPassphrase" class="form-password" fxLayout="column" fxLayoutAlign="center center" fxFlex>
+            <mat-form-field appearance="outline" *ngIf="!!message">
+                <div class="message" [innerHTML]="message"></div>
+                <input matInput formControlName="formfieldresolver" [hidden]="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Enter password *</mat-label>
+                <input matInput #password type="password" formControlName="password" (keyup.enter)='confirm()'>
+                <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                <mat-error *ngIf="formPassphrase.get('password').hasError('required')">{{ raiseErrorMsg.required }}</mat-error>
+                <mat-error *ngIf="formPassphrase.get('password').hasError('invalidwallet')">{{ raiseErrorMsg.invalidwallet }}</mat-error>
+                <mat-error *ngIf="formPassphrase.get('password').hasError('nohdpath')">{{ raiseErrorMsg.nohdpath }}</mat-error>
+                <mat-error *ngIf="formPassphrase.get('password').hasError('nomnemonic')">{{ raiseErrorMsg.nomnemonic }}</mat-error>
+                <mat-error *ngIf="formPassphrase.get('password').hasError('invalidpassword')">{{ raiseErrorMsg.invalidpassword }}</mat-error>
+                <mat-hint align="end" aria-live="polite">{{ password.value.length }} / 25</mat-hint>
+            </mat-form-field>
+            <div class="vspacer"></div>
+            <mat-checkbox class="check-box" formControlName="keeppassword">
+                <span class="keeppassword-long">Kept this password and don't ask me again.</span>
+                <span class="keeppassword-short">Kept this password.</span>
+            </mat-checkbox>
+        </form>
+    </div>
+    
+    <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="center center">
+        <div class="button-wrapper">
+            <button mat-raised-button type="button" color="accent" aria-label="CONFIRM" [disabled]="formPassphrase.invalid" (click)="confirm()">
+                CONFIRM
+            </button>
+
+            <button mat-raised-button type="button" color="accent" aria-label="CANCEL" (click)="cancel()">
+                CANCEL
+            </button>
+        </div>
+    </div>
+</div>

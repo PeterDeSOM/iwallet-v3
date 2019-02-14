@@ -1,0 +1,93 @@
+@import "src/@fuse/scss/fuse";
+@import "src/assets/styles/common";
+@import "./psbt.scss";
+
+
+#product {
+
+    .content {
+
+        .step-content{
+
+            .transaction-code {
+                width: 100%;
+
+                .code {
+                    color: #555;
+                    line-height: 16px;
+                    font-size: 10px;
+                }
+            }
+
+            .combining-notice {
+                padding-bottom: 24px;
+                width: 100%;
+
+                .icon {
+                    opacity: .5;
+                    margin-left: 16px;
+                    margin-right: 32px;
+                    @include md-icon-size(40px);
+                }
+
+                .notice {
+                    font-size: 4.3mm;
+                    line-height: 8mm;
+                    padding-right: 16px;
+                }
+            }
+
+            .psbts {
+                
+                .psbt {
+                    font-size: 10px;
+                }
+
+                .button {
+                    margin-left: -10px;
+                }
+            }
+
+            .balance-confirmed,
+            .balance-unconfirmed,
+            .step-trans-info,
+            .transaction-code {
+                padding: 10px 20px 10px 20px;
+
+                .divider {
+                    border-bottom: solid 1px #dfdfdf;
+                    margin: 4mm 0 4mm 0;
+                }
+
+                .row {
+                    display: flex;
+                    justify-content: space-between;
+                    line-height: 8mm;
+
+                    .description {
+                        color: #888;
+                        line-height: 19px;
+                        font-size: 13px;
+                        font-weight: 300;
+                    }
+                }
+            }
+
+            .transaction-field {
+
+                .controler-wrapper {
+                    padding-bottom: 24px;
+                }
+            }
+
+            @include media-breakpoint('xs') {
+
+                .balance-confirmed,
+                .balance-unconfirmed,
+                .transaction-code {
+                    padding: 0;
+                }
+            }
+        }
+    }
+}

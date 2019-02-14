@@ -1,0 +1,87 @@
+<div id="app-start" class="page-layout simple fullwidth">
+    <!-- HEADER -->
+    <div class="header" fxLayout="row" fxLayoutAlign="start start">
+        <div class="hero-text" fxLayout="column" fxLayoutAlign="center center" fxFlex>
+            <div class="h1">Som32</div>
+            <div class="h2">HD Multi-Featured Wallet</div>
+            <div class="h3">
+                Som32 wallet supports the Multi-Currency and the Multi-Sig functionality and provides up to 15-of-15 authorizers to sign a Multi-Sig transaction.
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+    
+    <!-- CONTENT -->
+    <div class="content" fxLayout="column">
+        <div class="price-tables" fxLayout="row wrap" fxLayoutAlign="center center">
+            <div class="price-table style-1 mat-elevation-z4" fxLayout="column">
+                <div class="p-24">
+                    <div class="package-type primary">
+                        <span>CREATE A NEW WALLET</span>
+                    </div>
+                </div>
+
+                <div class="label-content" fxLayout="column" fxFlex="1 1 auto">
+                    <span class="title">FOR A SHARED ACCOUNT</span>
+                    <div class="content" fxLayout="row" fxLayoutAlign="center center">
+                        <mat-icon class="label-icon">group_add</mat-icon>
+                        <div class="description">
+                            The most advanced in institutional or corporate settings with increasing the security.
+                        </div>
+                    </div>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <div class="label-content" fxLayout="column" fxFlex="1 1 auto">
+                    <span class="title">OR, FOR A SINGLE ACCOUNT</span>
+                    <div class="content" fxLayout="row" fxLayoutAlign="center center">
+                        <mat-icon class="label-icon">person</mat-icon>
+                        <div class="description">
+                            With simplified wallet process, everyone can easily access and transact.
+                        </div>
+                    </div>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <button mat-raised-button type="button" class="cta-button" color="accent" routerLink="/main/create">CREATE</button>
+            </div>
+
+            <div class="price-table style-1 mat-elevation-z4" fxLayout="column">
+                <div class="p-24">
+                    <div class="package-type primary">
+                        <span>OPEN EXISTING WALLET</span>
+                    </div>
+                </div>
+
+                <div class="button-stage" fxLayout="column" fxLayoutAlign="center" [@animateStagger]="{value:'50'}">
+                    <div class="button-hover" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-sm="33" [ngClass]="web" [@animate]="{value:'*',params:{y:'100%'}}">
+                        <div class="button-content" fxLayout="column" fxFlex="1 1 auto" [ngClass]="'firebase-bg'" (click)="fileSelector.click()">
+                            <span class="title">Import Wallet Key File</span>
+                            <span class="description">
+                                Bring your Som32-Wallet from a file stored in your local machine, not the centralized online database.
+                            </span>
+                            <span class="footer" fxLayoutAlign="end">
+                                Import <mat-icon class="button-icon">present_to_all</mat-icon>
+                            </span>
+                            <input #fileSelector (change)="importWalletFile($event)" type="file" class="hidden">
+                        </div>
+                    </div>
+    
+                    <div class="button-hover" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-sm="33" [ngClass]="web" [@animate]="{value:'*',params:{y:'100%'}}">
+                        <div class="button-content" fxLayout="column" fxFlex="1 1 auto" [ngClass]="'web-bg'" (click)="readWallet()">        
+                            <span class="title">Read Wallet QR-Code</span>
+                            <span class="description">
+                                Scan a QR code or Barcode from the early printed. It makes you more convenient to access the wallet.
+                            </span>
+                            <span class="footer" fxLayoutAlign="end">
+                                Read <mat-icon class="button-icon">filter_center_focus</mat-icon>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

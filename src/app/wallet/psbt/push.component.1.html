@@ -1,0 +1,101 @@
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+
+    <div class="center">
+        
+        <wallet-header></wallet-header>
+        
+        <div class="content-card">
+            <div class="content">
+                <mat-horizontal-stepper linear #stepper>
+                    <mat-step [stepControl]="formPushTx" [editable]="isEditable">
+                        <ng-template matStepLabel>Push PSBT</ng-template>
+
+                        <form [formGroup]="formPushTx">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" class="w-100-p">
+                                        <mat-label>PSBT code combined</mat-label>
+                                        <div class="input-wrapper" fxLayoutAlign="space-between">
+                                            <input matInput formControlName="psbt" class="psbt">
+                                            <span>
+                                                <a mat-icon-button matTooltip="Get code from a file" (click)="fileSelector.click()"><mat-icon>assignment</mat-icon></a>
+                                            </span>
+                                        </div>
+                                        <div class="info" fxLayout="column" *ngIf="!!psbt">
+                                            <div class="row">
+                                                <span class="label">TX Type</span>  
+                                                <span class="value">{{ psbtInfo.typeDesc }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">By</span>  
+                                                <span class="value">{{ psbtInfo.by }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Recipient</span>  
+                                                <span class="value">{{ psbtInfo.recipient }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Amount (Fee)</span>  
+                                                <span class="value">{{ psbtInfo.amount | satoshiToBitcoin | number:'1.8-8' }} ({{ psbtInfo.fee | satoshiToBitcoin | number:'1.8-8' }})</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Signer(s)</span>  
+                                                <span class="value multi-line" fxLayout="column">
+                                                    <span *ngFor="let signer of psbtInfo.signers" class="signer">{{ signer }}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <mat-error>Enter combined(fully signed) transaction</mat-error>
+                                    </mat-form-field>
+
+                                    <div class="button-wrapper" fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="PUSH & PAY" (click)="pushPsbt(stepper)">
+                                            PUSH & PAY
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                </div>
+                            </div>
+
+                            <input #fileSelector (change)="getPsbtCode($event)" type="file" class="hidden">
+                        </form>
+                    </mat-step>
+
+                    <mat-step [stepControl]="formFinishTx" [editable]="isEditable">
+                        <ng-template matStepLabel>Finished</ng-template>
+
+                        <form [formGroup]="formFinishTx">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="final-notice" fxLayoutAlign="center center">
+                                    <div class="notice">
+                                        <a [routerLink]="[ '/path', routeParam ]">{{ txid }}</a>
+                                    </div>
+                                </div>
+                                <div class="transaction-field" fxLayout="column">
+                                    LEFT
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                    RIGHT
+                                </div>
+                            </div>
+
+                            <div class="button-wrapper" fxLayoutAlign="center">
+                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="PUSH & PAY" (click)="stepReset(stepper)">
+                                    PUSH & PAY ANOTHER
+                                </button>
+                            </div>
+
+                            <input matInput formControlName="fakefield" [hidden]="true">
+                            <input matInput formControlName="txid" [hidden]="true">
+                        </form>
+                    </mat-step>
+                </mat-horizontal-stepper>
+            </div>
+        </div>
+    </div>
+</div>
+    

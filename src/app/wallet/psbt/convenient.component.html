@@ -1,0 +1,415 @@
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+
+    <div class="center">
+        
+        <wallet-header></wallet-header>
+        
+        <div class="content-card">
+            <div class="content">
+                <mat-tab-group (selectedTabChange)="tabChanged($event)" fxFlex>
+                    <mat-tab label="Create">
+                        <div class="tab-content p-24" fxLayout="row wrap" fusePerfectScrollbar>
+                            <div class="transaction-field" *ngIf="steps[0] == 0">
+                                <form [formGroup]="formCreate" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Name</mat-label>
+                                        <input formControlName="name" matInput placeholder="Name of the PSBT to be identified.">
+                                        <mat-error *ngIf="formCreate.get('name').errors?.required">Transaction name is required.</mat-error>
+                                        <mat-error *ngIf="formCreate.get('name').errors?.minlength">The name is too short. (At least 20)</mat-error>
+                                        <mat-error *ngIf="formCreate.get('name').errors?.maxlength">The name is too long. (At most 70)</mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>To</mat-label>
+                                        <input formControlName="to" matInput placeholder="Paste or scan an address">
+                                        <mat-error *ngIf="formCreate.get('to').errors?.required">Recipient's address is required.</mat-error>
+                                        <mat-error *ngIf="
+                                            formCreate.get('to').errors?.minlength ||
+                                            formCreate.get('to').errors?.pattern ||
+                                            formCreate.get('to').hasError('invalidaddress')
+                                        ">Invalid bitcoin address.</mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Amount</mat-label>
+                                        <input formControlName="amount" matInput placeholder="0.0">
+                                        <input formControlName="curbalance" matInput [hidden]="true">
+                                        <mat-error *ngIf="formCreate.get('amount').errors?.required">Payment amount is required.</mat-error>
+                                        <mat-error *ngIf="formCreate.get('amount').errors?.pattern">Invalid amount.</mat-error>
+                                        <mat-error *ngIf="formCreate.get('amount').hasError('notallowedzero')">Not accepted amount 0.</mat-error>
+                                        <mat-error *ngIf="formCreate.get('amount').hasError('notenoughbalance')">Not enough balance.</mat-error>
+                                    </mat-form-field>
+                                    
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Description</mat-label>
+                                        <textarea matInput #description placeholder="What's this transaction for? (Optional)"
+                                                name="description"
+                                                formControlName="description"
+                                                rows="3">
+                                        </textarea>
+                                    </mat-form-field>
+
+                                    <div fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CONTINUE TO CREATE TX" [disabled]="formCreate.invalid" (click)="stepIn(0, 1)">
+                                            CONTINUE TO CREATE TX
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="transaction-field" *ngIf="steps[0] == 1">
+                                <form [formGroup]="formCreateFinish" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Transaction Info</mat-label>
+
+                                        <div class="step-trans-info">
+                                            <div class="row">
+                                                <span class="label">To</span>
+                                                <span class="value">{{ to }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row">
+                                                <span class="label">Amount</span>
+                                                <span class="value">{{ amount | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Fee</span>
+                                                <span class="value">{{ txtotalfee | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row" [ngClass]="{'redwarn': notEnoughBalance ? true : false}">
+                                                <span class="label">Total</span>
+                                                <span class="value">{{ sum | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row">
+                                                <span class="label">Description</span>
+                                                <span class="value"></span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="description">{{ description }}</span>
+                                            </div>
+                                        </div>
+
+                                        <input matInput #confirmamount formControlName="amount" style="width: 0;">
+                                        <input matInput #curbalance formControlName="curbalance" [hidden]="true">
+                                        <input matInput formControlName="confirm" [hidden]="true">
+                                        <input matInput formControlName="verified" [hidden]="true">
+                                        <mat-error *ngIf="formCreateFinish.get('amount').hasError('notenoughbalance')">Not enough balance.</mat-error>
+                                    </mat-form-field>
+
+                                    <div class="controler-wrapper" fxLayoutAlign="center">
+                                        <mat-checkbox class="check-box" formControlName="confirmed" (click)="confirm()" [disabled]="notEnoughBalance">I confirm to create a PSBT.</mat-checkbox>
+                                    </div>
+
+                                    <div class="button-wrapper" fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CREATE TX" [disabled]="formCreateFinish.invalid" (click)="createPsbt()">
+                                            CREATE TX
+                                        </button>
+
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" (click)="stepIn(0, 0)">
+                                            CANCEL
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="transaction-field create-finish" fxLayout="column" fxLayoutAlign="start center" *ngIf="steps[0] == 2">
+                                <div>
+                                    <mat-icon class="secondary-text">backup</mat-icon>
+                                </div>
+                                <div class="label">Partially signed transaction is created successfully.</div>
+
+                                <div class="button-wrapper" fxLayoutAlign="center">
+                                    <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CREATE TX" [disabled]="formCreateFinish.invalid" (click)="stepIn(0, 0)">
+                                        CREATE ANOTHER
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="info-container" *ngIf="listCreatedByMyself.length == 0">
+                                <div class="no-psbt-wrapper">
+                                    <mat-icon class="icon secondary-text">speaker_notes_off</mat-icon>
+                                    <div class="notice" fxLayout="column">
+                                        <span class="title">There is no PSBT create by yourself.</span>
+                                        <span class="description">
+                                            Partially signed bitcoin transaction could be created by one of the participants of this MultiSig account, and the PSBTs only created by yourself will be listed here.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-container" fxLayout="column" *ngIf="listCreatedByMyself.length > 0">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Created PSBT(s) by myself</mat-label>
+    
+                                    <div class="info" fxLayout="column" *ngFor="let c of listCreatedByMyself; let i = index;">
+                                        <div class="divider" *ngIf="i > 0"></div>
+
+                                        <div class="row">
+                                            <span class="label">Created</span>  
+                                            <div class="value action" fxLayoutAlign="space-between center">
+                                                <span>{{ c.datetime }}</span>
+                                                <div class="button-wrapper">
+                                                    <button mat-icon-button matTooltip="Delete & Cancel Tx" (click)="cancelPsbt(0, c.id)" *ngIf="c.signers.length == 0">
+                                                        <mat-icon aria-label="Delete & Cancel Tx">highlight_off</mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button [matTooltip]="c.m == c.signers.length ? 'Signed all' : 'Signing'" *ngIf="c.signers.length > 0">
+                                                        <mat-icon class="secondary-text" aria-label="Signing">lock</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Name</span>  
+                                            <span class="value">{{ c.name }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Recipient</span>  
+                                            <span class="value">{{ c.recipient }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Amount (Fee)</span>  
+                                            <span class="value">{{ c.amount | satoshiToBitcoin | number:'1.8-8' }} ({{ c.fee | satoshiToBitcoin | number:'1.8-8' }})</span>
+                                        </div>
+                                        <div class="row" *ngIf="!!c.desc">
+                                            <span class="label">Description</span>  
+                                            <span class="value description">{{ c.desc }}</span>
+                                        </div>
+                                        <div class="row" *ngIf="c.signers.length > 0">
+                                            <span class="label">Signer(s)</span>  
+                                            <span class="value description" fxLayout="column">
+                                                <span *ngFor="let address of c.signers">{{ address }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <input matInput [hidden]="true">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-tab>
+                    <mat-tab label="Sign">
+                        <div class="tab-content p-24" fxLayout="row wrap" fusePerfectScrollbar>
+                            <div class="transaction-field" *ngIf="listCreated.length == 0">
+                                <div class="no-psbt-wrapper">
+                                    <mat-icon class="icon secondary-text">speaker_notes_off</mat-icon>
+                                    <div class="notice" fxLayout="column">
+                                        <span class="title">There is no PSBTs to be spent.</span>
+                                        <span class="description">
+                                            Partially signed bitcoin transaction could be created by one of the participants of this MultiSig account, and all the PSBTs created will be listed here.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="transaction-field" fxLayout="column" *ngIf="listCreated.length > 0">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Signing PSBT(s)</mat-label>
+    
+                                    <div class="info" fxLayout="column" *ngFor="let c of listCreated; let i = index;">
+                                        <div class="divider" *ngIf="i > 0"></div>
+
+                                        <div class="row">
+                                            <span class="label">Created</span>  
+                                            <div class="value action" fxLayoutAlign="space-between center">
+                                                <span>{{ c.datetime }}</span>
+                                                <div class="button-wrapper">
+                                                    <button mat-icon-button matTooltip="Sign Tx" (click)="signPsbt(c.id)" *ngIf="c.m > c.signers.length && !c.signed">
+                                                        <mat-icon aria-label="Sign Tx">fingerprint</mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button [matTooltip]="c.m <= c.signers.length ? 'Signed all' : 'Signed by myself'" *ngIf="c.m <= c.signers.length || c.signed">
+                                                        <mat-icon class="secondary-text" aria-label="Signing">lock</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Name</span>  
+                                            <span class="value">{{ c.name }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">By</span>  
+                                            <span class="value">{{ c.by }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Recipient</span>  
+                                            <span class="value">{{ c.recipient }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Amount (Fee)</span>  
+                                            <span class="value">{{ c.amount | satoshiToBitcoin | number:'1.8-8' }} ({{ c.fee | satoshiToBitcoin | number:'1.8-8' }})</span>
+                                        </div>
+                                        <div class="row" *ngIf="!!c.desc">
+                                            <span class="label">Description</span>  
+                                            <span class="value description">{{ c.desc }}</span>
+                                        </div>
+                                        <div class="row" *ngIf="c.signers.length > 0">
+                                            <span class="label">Signer(s)</span>  
+                                            <span class="value description" fxLayout="column">
+                                                <span *ngFor="let address of c.signers">{{ address }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <input matInput [hidden]="true">
+                                </mat-form-field>
+                            </div>
+
+                            <div class="info-container" *ngIf="listSignedByMyself.length == 0">
+                                <div class="no-psbt-wrapper">
+                                    <mat-icon class="icon secondary-text">blur_off</mat-icon>
+                                    <div class="notice" fxLayout="column">
+                                        <span class="title">There is no PSBT signed by yourself.</span>
+                                        <span class="description">
+                                            If the PSBT is created, it could be signed by one of the signers of this MultiSig account, and only the PSBTs signed by yourself will be listed here.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-container" fxLayout="column" *ngIf="listSignedByMyself.length > 0">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Signed PSBT(s) by myself</mat-label>
+    
+                                    <div class="info" fxLayout="column" *ngFor="let c of listSignedByMyself; let i = index;">
+                                        <div class="divider" *ngIf="i > 0"></div>
+
+                                        <div class="row">
+                                            <span class="label">Signed</span>  
+                                            <div class="value action" fxLayoutAlign="space-between center">
+                                                <span>{{ c.datetime }}</span>
+                                                <div class="button-wrapper">
+                                                    <button mat-icon-button matTooltip="Cancel signing" (click)="cancelPsbt(1, c.id)">
+                                                        <mat-icon aria-label="Cancel signing">highlight_off</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Name</span>  
+                                            <span class="value">{{ c.name }}</span>
+                                        </div>
+                                    </div>
+
+                                    <input matInput [hidden]="true">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-tab>
+                    <mat-tab label="Push & Pay">
+                        <div class="tab-content p-24" fxLayout="row wrap" fusePerfectScrollbar>
+                            
+                            <div class="info-container" *ngIf="listComplete.length == 0">
+                                <div class="no-psbt-wrapper">
+                                    <mat-icon class="icon secondary-text">layers_clear</mat-icon>
+                                    <div class="notice" fxLayout="column">
+                                        <span class="title">There is no signing complete PSBT.</span>
+                                        <span class="description">
+                                                If the signing on the created PSBT is done, it could be pushed to the network, and the bitcoin also be sent to a recipient. The signing complete PSBTs are listed here. 
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="transaction-field" *ngFor="let c of listComplete; let i = index;" [ngClass]="{'sub-line': i>1}">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>PSBT signed all</mat-label>
+    
+                                    <div class="info" fxLayout="column">
+                                        <div class="row">
+                                            <span class="label">Created</span>  
+                                            <span class="value">{{ c.datetime }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Name</span>  
+                                            <span class="value">{{ c.name }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">By</span>  
+                                            <span class="value">{{ c.by }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Recipient</span>  
+                                            <span class="value">{{ c.recipient }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Amount (Fee)</span>  
+                                            <span class="value">{{ c.amount | satoshiToBitcoin | number:'1.8-8' }} ({{ c.fee | satoshiToBitcoin | number:'1.8-8' }})</span>
+                                        </div>
+                                        <div class="row" *ngIf="!!c.desc">
+                                            <span class="label">Description</span>  
+                                            <span class="value description">{{ c.desc }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Signer(s)</span>  
+                                            <span class="value description" fxLayout="column">
+                                                <span *ngFor="let address of c.signers">{{ address }}</span>
+                                            </span>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="row button-wrapper" fxLayoutAlign="center">
+                                            <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="PUSH & PAY" (click)="pushPsbt(c.id)">
+                                                PUSH & PAY
+                                            </button>
+                                            <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" (click)="cancelPsbt(2, c.id)">
+                                                CANCEL
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <input matInput [hidden]="true">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-tab>
+                    <mat-tab label="History">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div class="table-history">
+                                <div class="row" *ngFor="let c of listHistory" fxLayoutAlign="space-between center">
+                                    <span class="cell datetime">{{ c.datetime }}</span>  
+                                    <div class="cell name dont-break-out">{{ c.name }}</div>
+                                    <span class="cell action">{{ c.action }}</span>
+                                    <div class="cell written dont-break-out">{{ c.by }}</div>
+                                </div>
+                            </div>
+
+                            <div class="table-history-container" *ngIf="listHistory.length > 0">
+                                <div fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Partially signed transaction history</mat-label>
+
+                                        <div class="info" fxLayout="column" *ngFor="let c of listHistory; let i = index;">
+                                            <div class="divider" *ngIf="i > 0"></div>
+
+                                            <div class="row">
+                                                <span class="label">Date</span>  
+                                                <span class="value">{{ c.datetime }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Name</span>  
+                                                <span class="value  description">{{ c.name }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Action</span>  
+                                                <span class="value">{{ c.action }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">By</span>  
+                                                <span class="value">{{ c.by }}</span>
+                                            </div>
+                                        </div>
+
+                                        <input matInput [hidden]="true">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>
+    </div>
+</div>
+    

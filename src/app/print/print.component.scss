@@ -1,0 +1,5 @@
+
+@media print {
+    app-print > * { display: none; }
+    app-print print-layout { display: block; }
+}

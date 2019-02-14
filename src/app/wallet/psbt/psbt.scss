@@ -1,0 +1,112 @@
+@import "src/@fuse/scss/fuse";
+@import "src/assets/styles/common";
+
+#product {
+
+    .hidden {
+        display: none;
+    }
+
+    .top-bg {
+        height: 234px;
+    }
+
+    .content {
+
+        @include media-breakpoint('xs') {
+
+            .mat-step-label {
+                display: none;
+            }
+        }
+
+        .step-content{
+            flex: 1 1 auto;
+            max-width: 100%;
+
+            .divider {
+                border-bottom: solid 1px #dfdfdf;
+                margin: 4mm 0 4mm 0;
+            }
+
+            .transaction-field {
+                width: 50%;
+                padding: 15px;
+
+                .button-wrapper {
+                    margin-left: 5px;
+                }
+                .button-wrapper > * {
+                    margin-right: 10px;
+                }
+            }
+
+            .info-container {
+                width: 50%;
+                padding: 15px;
+                padding-left: 20px;
+
+                .notice-header {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    width: 100%;
+    
+                    .icon {
+                        font-size: 1.5cm;
+                        min-width: 1.5cm;
+                        min-height: 1.5cm;
+                    }
+    
+                    .notice {
+                        margin-left: 5mm;
+    
+                        .title {
+                            font-size: 5.5mm;
+                            margin-bottom: 3mm;
+                        }
+    
+                        .description {
+                            font-style: italic;
+                            font-size: 13px;
+                            border-left: solid 3px #dfdfdf;
+                            padding-left: 4mm;
+                        }
+                    }
+                }
+
+                .notice-table {
+                    padding: 7mm 3mm 5mm 3mm;
+
+                    .row {
+                        padding: 7px;
+        
+                        .icon {
+                            margin-right: 5mm;
+                        }
+                    }
+                }
+            }
+
+            @include media-breakpoint('xs') {
+
+                .transaction-field {
+                    width: 100%;
+                    padding: 0;
+                }
+    
+                .info-container {
+                    width: 100%;
+                    padding: 0;
+                    margin-top: 36px;
+                }
+            }
+        }
+
+        // Temporary prefix alignment fix
+        .mat-form-field-appearance-outline .mat-form-field-prefix,
+        .mat-form-field-appearance-outline .mat-form-field-suffix {
+            top: 0;
+        }
+    }
+}

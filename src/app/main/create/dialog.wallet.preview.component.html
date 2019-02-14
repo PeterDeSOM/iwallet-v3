@@ -1,0 +1,263 @@
+<div class="dialog-content-wrapper" (click)="matDialogRef.close()">
+    <mat-toolbar class="tool-bar mat-accent m-0">
+        <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">New Message</span>
+
+            <button mat-icon-button (click)="exportToPDF()" aria-label="Export To PDF">
+                Export to PDF
+            </button>
+            
+            <button mat-icon-button (click)="matDialogRef.close()" aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div id="canvas" class="print-preview-form">
+        <div class="side-left">
+            <img src="assets/images/common/bitcoin_PNG36_vl.png" *ngFor="let in of [1,2,3,4,5,6,7]">
+        </div>
+
+        <div class="form-document">
+            <div class="header">
+                <div class="left">
+
+                </div>
+                <div class="center">
+
+                </div>
+                <div class="right">
+                    <span class="print-date">PRINT DATE : 08/11/2018</span>
+                </div>
+            </div>
+
+            <div class="title">
+                <h1>Som32 HD Multi-Signature Bitcoin Wallet</h1>
+            </div>
+
+            <div class="vertical-spacer"></div>
+
+            <div class="wallet">
+                <table>
+                    <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                    <tr>
+                        <td></td><td class="qrcode">
+                            <qrcode [qrdata]="walletToString" [level]="'M'"></qrcode>
+                        </td><td></td>
+                    </tr>
+                    <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                </table>
+
+                <div class="horizantal-spacer"></div>
+
+                <div>
+                    <span class="qrcode-content-title">
+                        Som32-Wallet file format
+                    </span>
+
+                    <table class="content">
+                        <tr><td>&#123;</td></tr>
+                        <tr>
+                            <td></td>
+                            <td>accountType</td>
+                            <td>:</td>
+                            <td>{{ some32Wallet.accountType }}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>useMnemonic</td>
+                            <td>:</td>
+                            <td>{{ some32Wallet.useMnemonic }}</td>
+                        </tr>
+                    </table>
+                    <table class="content">
+                        <tr>
+                            <td></td>
+                            <td>
+                                <table>
+                                    <tr><td>&#123;</td></tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>mnemonic</td>
+                                        <td>:</td>
+                                        <td>{{ mnemonic }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>privateKey</td>
+                                        <td>:</td>
+                                        <td>{{ privateKey }}</td>
+                                    </tr>
+                                    <tr>    
+                                        <td></td>
+                                        <td>paymentPubKey</td>
+                                        <td>:</td>
+                                        <td>{{ paymentPubKey }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>changePubKey</td>
+                                        <td>:</td>
+                                        <td>{{ changePubKey }}</td>
+                                    </tr>
+                                    <tr><td>&#125;</td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr><td>&#125;</td></tr>
+                    </table>
+
+                    <div class="vertical-spacer"></div>
+
+                    <span>
+                        Som32-Wallet file format QR-Code is read to load your wallet.
+                    </span>
+                </div>
+            </div>
+
+            <div class="vertical-spacer"></div>
+            <div class="horizantal-divider"></div>
+            <div class="vertical-spacer"></div>
+
+            <div class="privatekey">
+                <div class="simple">
+                    <span class="qrcode-content-title">
+                        Mnenonic code
+                    </span>
+
+                    <table>
+                        <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                        <tr>
+                            <td></td><td class="qrcode-large">
+                                <qrcode [qrdata]="mnemonic" [level]="'M'"></qrcode>
+                            </td><td></td>
+                        </tr>
+                        <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                    </table>
+
+                    <span class="code-string">
+                        {{ mnemonic }}
+                    </span>
+                </div>
+
+                <div class="simple">
+                    <span class="qrcode-content-title">
+                        Private-Key
+                    </span>
+
+                    <table>
+                        <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                        <tr>
+                            <td></td><td class="qrcode-large">
+                                <qrcode [qrdata]="privateKey" [level]="'M'"></qrcode>
+                            </td><td></td>
+                        </tr>
+                        <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                    </table>
+
+                    <span class="code-string">
+                        {{ privateKey }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="vertical-spacer"></div>
+            <div class="horizantal-divider"></div>
+            <div class="vertical-spacer"></div>
+
+            <div class="address">
+                <table>
+                    <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                    <tr>
+                        <td></td><td class="qrcode">
+                            <qrcode [qrdata]="paymentPubKey" [level]="'M'"></qrcode>
+                        </td><td></td>
+                    </tr>
+                    <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                </table>
+
+                <div class="horizantal-spacer"></div>
+
+                <div>
+                    <span class="qrcode-content-title">
+                        Address / Public-Key to recieve payment
+                    </span>
+
+                    <div class="vertical-spacer"></div>
+
+                    <table class="content">
+                        <tr>    
+                            <td>paymentPubKey</td>
+                            <td>:</td>
+                            <td>{{ paymentPubKey }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="vertical-spacer"></div>
+
+                    <span>
+                        Payment address / public-key is also known as the Deposit Address.
+                        Generally, you can publish this address to recieve any bitcoin amount from.
+                    </span>
+                </div>
+            </div>
+
+            <div class="vertical-spacer"></div>
+
+            <div class="address">
+                <table>
+                    <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                    <tr>
+                        <td></td><td class="qrcode">
+                            <qrcode [qrdata]="changePubKey" [level]="'M'"></qrcode>
+                        </td><td></td>
+                    </tr>
+                    <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                </table>
+
+                <div class="horizantal-spacer"></div>
+
+                <div>
+                    <span class="qrcode-content-title">
+                        Address / Public-Key to recieve change
+                    </span>
+
+                    <div class="vertical-spacer"></div>
+
+                    <table class="content">
+                        <tr>    
+                            <td>changePubKey</td>
+                            <td>:</td>
+                            <td>{{ changePubKey }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="vertical-spacer"></div>
+
+                    <span>
+                        Change address / public-key could be used to revieve change of your payment. 
+                        It will separately be used with Payment-Address to easily manage your bitcoin. 
+                    </span>
+                </div>
+            </div>
+
+            <div class="vertical-spacer"></div>
+
+            <div class="footer">
+                <div class="left">
+
+                </div>
+                <div class="center">
+                    SOM32 HD MULTI-SIGNATURE BITCOIN WALLET
+                </div>
+                <div class="right">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="side-right">
+            <img src="assets/images/common/bitcoin_PNG36_vr.png" *ngFor="let in of [1,2,3,4,5,6,7]">
+        </div>
+    </div>
+</div>

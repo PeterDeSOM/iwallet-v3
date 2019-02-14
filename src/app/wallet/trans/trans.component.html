@@ -1,0 +1,120 @@
+<div id="transactions" class="page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+
+    <div class="center">
+        
+        <wallet-header></wallet-header>
+        
+        <div class="content-card">
+            <div class="content">
+                <mat-tab-group fxFlex>
+                    <mat-tab label="Transaction">
+                        <div class="tab-content p-24" fxLayout="column" fusePerfectScrollbar>
+                            <div class="table-transaction">
+                                <div class="row" fxLayoutAlign="space-between center" *ngFor="let txItem of txItems">
+                                    <mat-icon matTooltip="Received" *ngIf="txItem.indicator=='From'" class="indicator from">add_to_queue</mat-icon>
+                                    <mat-icon matTooltip="Sent" *ngIf="txItem.indicator=='To'" class="indicator to">remove_from_queue</mat-icon>
+                                    
+                                    <div fxLayout="row">
+                                        <div class="value indicator" [ngClass]="{'sent': txItem.amount<0}">
+                                            {{ txItem.indicator }}
+                                        </div>
+                                        <div class="value addr">
+                                            {{ txItem.addr }}
+                                        </div>
+                                    </div>
+
+                                    <span class="value time">
+                                        {{ txItem.time }}
+                                    </span>
+
+                                    <div class="value amount" [ngClass]="{'sent': txItem.amount<0}" fxLayoutAlign="end center">
+                                        <mat-icon *ngIf="!txItem.confirmed" class="indicator confirming" matTooltip="Not yet confirmed">screen_lock_rotation</mat-icon>
+                                        <span *ngIf="currency == 'btc'">{{ txItem.amount | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                        <span *ngIf="currency == 'eth'">{{ txItem.amount | weiToEther | number:'1.8-8' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-transaction-break">
+                                <div fxLayout="column">
+                                    <div class="info" fxLayout="column" *ngFor="let txItem of txItems; let i = index;">
+                                        <div class="divider" *ngIf="i > 0"></div>
+
+                                        <div class="row">
+                                            <span class="label">Date</span>  
+                                            <span class="value">{{ txItem.confirmed ? txItem.time : 'Not yet confirmed' }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label" [ngClass]="{'sent': txItem.amount<0}">{{ txItem.indicator }}</span>  
+                                            <span class="value">{{ txItem.addr }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Amount</span>  
+                                            <span class="value" [ngClass]="{'sent': txItem.amount<0}" *ngIf="currency == 'btc'">{{ txItem.amount | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                            <span class="value" [ngClass]="{'sent': txItem.amount<0}" *ngIf="currency == 'eth'">{{ txItem.amount | weiToEther | number:'1.8-8' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                    <mat-tab label="Internal Transaction" *ngIf="!!txItemsIn">
+                        <div class="tab-content p-24" fxLayout="column" fusePerfectScrollbar>
+                            <div class="table-transaction">
+                                <div class="row" fxLayoutAlign="space-between center" *ngFor="let txItem of txItemsIn">
+                                    <mat-icon matTooltip="Received" *ngIf="txItem.indicator=='From'" class="indicator from">add_to_queue</mat-icon>
+                                    <mat-icon matTooltip="Sent" *ngIf="txItem.indicator=='To'" class="indicator to">remove_from_queue</mat-icon>
+                                    
+                                    <div fxLayout="row">
+                                        <div class="value indicator" [ngClass]="{'sent': txItem.amount<0}">
+                                            {{ txItem.indicator }}
+                                        </div>
+                                        <div class="value addr">
+                                            {{ txItem.addr }}
+                                        </div>
+                                    </div>
+
+                                    <span class="value time">
+                                        {{ txItem.time }}
+                                    </span>
+
+                                    <div class="value amount" [ngClass]="{'sent': txItem.amount<0}" fxLayoutAlign="end center">
+                                        <mat-icon *ngIf="!txItem.confirmed" class="indicator confirming" matTooltip="Not yet confirmed">screen_lock_rotation</mat-icon>
+                                        <span>
+                                            {{ txItem.amount | weiToEther | number:'1.8-8' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-transaction-break">
+                                <div fxLayout="column">
+                                    <div class="info" fxLayout="column" *ngFor="let txItem of txItemsIn; let i = index;">
+                                        <div class="divider" *ngIf="i > 0"></div>
+
+                                        <div class="row">
+                                            <span class="label">Date</span>  
+                                            <span class="value">{{ txItem.confirmed ? txItem.time : 'Not yet confirmed' }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label" [ngClass]="{'sent': txItem.amount<0}">{{ txItem.indicator }}</span>  
+                                            <span class="value">{{ txItem.addr }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Amount</span>  
+                                            <span class="value" [ngClass]="{'sent': txItem.amount<0}">
+                                                {{ txItem.amount | weiToEther | number:'1.8-8' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>
+    </div>
+</div>

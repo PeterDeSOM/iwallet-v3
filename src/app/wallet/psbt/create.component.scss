@@ -1,0 +1,55 @@
+@import "src/@fuse/scss/fuse";
+@import "src/assets/styles/common";
+@import "./psbt.scss";
+
+#product {
+
+    .content {
+
+        .step-content{
+
+            .transaction-code {
+                width: 100%;
+
+                .code {
+                    color: #555;
+                    line-height: 16px;
+                    font-size: 10px;
+                }
+            }
+
+            .balance-confirmed,
+            .balance-unconfirmed,
+            .step-trans-info,
+            .transaction-code {
+                padding: 10px 20px 10px 20px;
+
+                .row {
+                    display: flex;
+                    justify-content: space-between;
+                    line-height: 8mm;
+
+                    &.redwarn {
+                        color: red;
+                    }
+                
+                    .description {
+                        color: #888;
+                        line-height: 19px;
+                        font-size: 13px;
+                        font-weight: 300;
+                    }
+                }
+            }
+
+            @include media-breakpoint('xs') {
+
+                .balance-confirmed,
+                .balance-unconfirmed,
+                .transaction-code {
+                    padding: 0;
+                }
+            }
+        }
+    }
+}

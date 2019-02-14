@@ -1,0 +1,12 @@
+<mat-toolbar>
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-xs="space-between center" fxFlex>
+        <div class="notice" fxLayoutAlign="start center" fxHide fxShow.gt-xs>
+            <mat-icon>report</mat-icon>
+            <span>Your Wallet has been changed. You may need to export and save it.</span>
+        </div>
+        <a mat-button class="pink" fxFlex="0 0 auto" fxLayout="row" fxLayoutAlign="start center" (click)="save()">
+            <mat-icon class="s-16 mr-sm-4">save</mat-icon>
+            <span>Save your wallet has been changed.</span>
+        </a>
+    </div>
+</mat-toolbar>

@@ -1,0 +1,8 @@
+.print-form { width: 100%; }
+.header, .header-space, .footer, .footer-space { width: 100%; height: 100px; }
+.header { position: fixed; top: 0; }
+.footer { position: fixed; bottom: 0; }
+
+@media print {
+    .isShow { display: none; }
+}

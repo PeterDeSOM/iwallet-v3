@@ -1,0 +1,94 @@
+<div class="dialog-content-wrapper">
+    <mat-toolbar class="mat-accent m-0">
+        <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">QR Code Scanner</span>
+            <button mat-icon-button (click)="close()" aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div mat-dialog-content class="p-24 m-0" fusePerfectScrollbar>
+        <form [formGroup]="formScanner">
+            <mat-form-field appearance="outline">
+                <mat-label>Select a camera</mat-label>
+                <mat-select formControlName="devices">
+                    <mat-option *ngFor="let device of devices" [value]="device.deviceId">{{ device.label }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <div class="scanner-container" [ngClass]="{'loaded': loaded }">
+                <div class="loading-box" fxLayoutAlign="center center" *ngIf="!loaded">
+                    <div class="spinner-wrapper">
+                        <mat-progress-spinner class="spinner" diameter="45" strokeWidth="4" color="accent" mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                </div>
+                <zxing-scanner #scanner class="scanner" start="true" [device]="selectedDevice" (scanSuccess)="handleQrCodeResult($event)" [formats]="['QR_CODE', 'EAN_13', 'CODE_128', 'DATA_MATRIX']" [ngClass]="{'none': !loaded || !!!hasDevices || !!!hasPermission}"></zxing-scanner>
+                <div class="scaler-wrapper" [ngClass]="{'none': !loaded || !!!hasDevices || !!!hasPermission}">
+                    <table class="scaler">
+                        <tr><td class="tl"></td><td></td><td class="tr"></td></tr>
+                        <tr><td></td><td class="content"></td><td></td></tr>
+                        <tr><td class="bl"></td><td></td><td class="br"></td></tr>
+                    </table>
+                </div>
+                <div class="alert-box" *ngIf="loaded && (!!!hasDevices || !!!hasPermission)">
+                    <div class="waiting-permission" fxLayout="row" *ngIf="hasPermission === undefined">
+                        <mat-icon class="notice-icon">linked_camera</mat-icon>
+                        <div class="message-box" fxLayout="column">
+                            <span class="title">Waiting for the permissions.</span>
+                            <span class="desc">If your device does not has cameras, no permissions will be asked.</span>
+                        </div>
+                    </div>
+
+                    <div class="permission-denied" fxLayout="row" *ngIf="hasPermission === false">
+                        <mat-icon class="notice-icon">voice_over_off</mat-icon>
+                        <div class="message-box" fxLayout="column">
+                            <span class="title">Permission denied.</span>
+                            <span class="desc">It could not have permission to access camera device(s).</span>
+                        </div>
+                    </div>
+                    
+                    <div class="device-undefined" fxLayout="row" *ngIf="hasDevices === undefined">
+                        <mat-icon class="notice-icon">report_problem</mat-icon>
+                        <div class="message-box" fxLayout="column">
+                            <span class="title">Incomplete to check the cameras.</span>
+                            <span class="desc">This may be caused by some security error, or watiting for the permission.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="not-found-camera" fxLayout="row" *ngIf="hasDevices === false">
+                        <mat-icon class="notice-icon">tv_off</mat-icon>
+                        <div class="message-box" fxLayout="column">
+                            <span class="title">Not found camera device.</span>
+                            <span class="desc">There is no media devices attached to.</span>
+                        </div>
+                    </div>
+
+                    <div class="status-box">
+                        <span class="title">Status of the device access</span>
+                        <div class="status-wrapper">
+                            <div class="device">
+                                <mat-icon *ngIf="hasDevices === undefined">help_outline</mat-icon>
+                                <mat-icon *ngIf="hasDevices === false">block</mat-icon>
+                                <mat-icon *ngIf="!!hasDevices">done_outline</mat-icon>
+                                <span class="camera">Camera</span>
+                            </div>
+                            <div class="permission">
+                                <mat-icon *ngIf="hasPermission === undefined">help_outline</mat-icon>
+                                <mat-icon *ngIf="hasPermission === false">highlight_off</mat-icon>
+                                <mat-icon *ngIf="!!hasPermission">done_outline</mat-icon>
+                                <span>Permission</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="center center">
+        <div class="button-wrapper">
+            <button mat-raised-button type="button" color="accent" aria-label="CANCEL" (click)="close()">CANCEL</button>
+        </div>
+    </div> -->
+</div>

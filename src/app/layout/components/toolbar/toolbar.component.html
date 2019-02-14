@@ -1,0 +1,81 @@
+<mat-toolbar class="p-0 mat-elevation-z1">
+
+    <div fxFlex fxFill fxLayout="row" fxLayoutAlign="start center">
+
+        <div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="start center">
+
+            <button mat-icon-button class="navbar-toggle-button"
+                    *ngIf="!hiddenNavbar && !rightNavbar" (click)="toggleSidebarOpen('navbar')" fxHide.gt-md>
+                <mat-icon class="secondary-text">menu</mat-icon>
+            </button>
+
+            <div class="toolbar-separator" *ngIf="!hiddenNavbar && !rightNavbar" fxHide.gt-md></div>
+
+            <div class="section-coins px-8 px-md-16">
+                <div class="coins-mat-menu-wrapper">
+                    <button mat-icon-button [matMenuTriggerFor]="coinsMenu" class="button-coins">
+                        <div fxLayout="row" fxLayoutAlign="start center">
+                            <!-- <span class="lr-marding-7"><mat-icon>monetization_on</mat-icon></span> -->
+                            <span>{{ currentCoin | uppercase }}</span>
+                        </div>
+                    </button>
+                    <mat-menu #coinsMenu="matMenu" [overlapTrigger]="false">
+                        <button mat-menu-item *ngFor="let symbol of coinService.symbol" (click)="formCoins.get('coin').setValue(symbol)">{{ symbol | uppercase }}</button>
+                    </mat-menu>
+                </div>
+                <div class="coins-wrapper">
+                    <div fxLayoutAlign="start center">
+                        <mat-icon class="lr-marding-7 secondary-text">monetization_on</mat-icon>
+                        <form [formGroup]="formCoins">
+                            <mat-form-field floatLabel="never">
+                                <mat-select disableOptionCentering class="coin-symbol" formControlName="coin">
+                                    <mat-option *ngFor="let symbol of coinService.symbol" [value]="symbol">
+                                        {{ symbol | uppercase }}
+                                    </mat-option>
+                                </mat-select>
+                                <input matInput formControlName="fakefield" [hidden]="true">
+                            </mat-form-field>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-separator"></div>
+
+            <div class="section-psbt px-8 px-md-16" *ngIf="som32Config.account.type == 'shared'">
+                <div class="psbt-mat-menu-wrapper">
+                    <button mat-icon-button [matMenuTriggerFor]="psbtMenu" class="button-psbt">
+                        <div fxLayout="row" fxLayoutAlign="start center">
+                            <span class="lr-marding-7"><mat-icon>recent_actors</mat-icon></span>
+                            <span>{{ currentServiceCode }}</span>
+                        </div>
+                    </button>
+                    <mat-menu #psbtMenu="matMenu" [overlapTrigger]="false">
+                        <button mat-menu-item *ngFor="let service of psbtservice" (click)="formPsbtService.get('service').setValue(service.type)">{{ service.code }}</button>
+                    </mat-menu>
+                </div>
+                <div class="psbt-wrapper">
+                    <div fxLayoutAlign="start center">
+                        <mat-icon class="lr-marding-7 secondary-text">recent_actors</mat-icon>
+                        <form [formGroup]="formPsbtService">
+                            <mat-form-field floatLabel="never">
+                                <mat-select disableOptionCentering class="psbt-service-type" placeholder="Select to use" formControlName="service">
+                                    <mat-option *ngFor="let service of psbtservice" [value]="service.type">
+                                        {{ service.name }}
+                                    </mat-option>
+                                </mat-select>
+                                <input matInput formControlName="fakefield" [hidden]="true">
+                            </mat-form-field>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-exit px-8 px-md-16" fxLayoutAlign="center center" (click)="exitWallet()">
+            <div class="toolbar-separator"></div>
+            <button mat-icon-button class="lr-marding-7"><mat-icon>exit_to_app</mat-icon></button>
+            <span class="label">EXIT</span>
+        </div>
+    </div>
+</mat-toolbar>

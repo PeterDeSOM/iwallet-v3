@@ -1,0 +1,137 @@
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+
+    <div class="center">
+        
+        <wallet-header></wallet-header>
+        
+        <div class="content-card">
+            <div class="content">
+                <mat-horizontal-stepper linear #stepper>
+                    <mat-step [stepControl]="formCombineTx" [editable]="isEditable">
+                        <ng-template matStepLabel>Sign PSBT</ng-template>
+
+                        <form [formGroup]="formSignTx">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" class="w-100-p">
+                                        <mat-label>PSBT code created</mat-label>
+                                        <div class="input-wrapper" fxLayoutAlign="space-between">
+                                            <input matInput formControlName="psbt" class="psbt">
+                                            <div fxLayout="row">
+                                                <span class="button"><a mat-icon-button matTooltip="Get code from a file" (click)="fileSelector.click()"><mat-icon>assignment</mat-icon></a></span>
+                                                <span class="button"><a mat-icon-button matTooltip="Scan QRCode" (click)="readPsbt()"><mat-icon svgIcon="qrcode-scan"></mat-icon></a></span>
+                                            </div>
+                                        </div>
+                                        <div class="info" fxLayout="column" *ngIf="!!psbt">
+                                            <div class="row">
+                                                <span class="label">TX Type</span>  
+                                                <span class="value">{{ psbtInfo.typeDesc }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">{{ psbtInfo.type == 'CREATED' ? 'By' : 'Last signed'}}</span>  
+                                                <span class="value">{{ psbtInfo.by }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Recipient</span>  
+                                                <span class="value">{{ psbtInfo.recipient }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Amount (Fee)</span>  
+                                                <span class="value">{{ psbtInfo.amount | satoshiToBitcoin | number:'1.8-8' }} ({{ psbtInfo.fee | satoshiToBitcoin | number:'1.8-8' }})</span>
+                                            </div>
+                                            <div class="row" *ngIf="psbtInfo.type == 'SIGNED'">
+                                                <span class="label">Signer(s)</span>  
+                                                <span class="value">
+                                                    <span *ngFor="let signer of psbtInfo.signers" class="signers">{{ signer }}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <mat-error>Enter partially signed transaction</mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p" *ngIf="isSigned">
+                                        <mat-label>Signed transaction Code</mat-label>
+
+                                        <div class="transaction-code" fxLayout="column">
+                                            <div class="header" fxLayout="row" fxLayoutAlign="space-between center">
+                                                <span>{{ isCompleted ? 'Complete' : 'Incomplete, need ' + currentSharedAccount.m + ' of ' + currentSharedAccount.n }}</span>
+                                                <div class="menu-bar">
+                                                    <span class="button">
+                                                        <button mat-icon-button [matTooltip]="codeButtonTooltip" (click)="convertCode()">
+                                                            <mat-icon aria-label="Convert Code">swap_horizontal_circle</mat-icon>
+                                                        </button>
+                                                    </span>
+                                                    <span class="button">    
+                                                        <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(code)">
+                                                            <mat-icon aria-label="Convert Code">library_books</mat-icon>
+                                                        </button>
+                                                    </span>
+                                                    <span class="button">
+                                                        <a mat-icon-button matTooltip="View code detail" (click)="showPsbt();"><mat-icon>new_releases</mat-icon></a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <textarea #code matInput formControlName="code" matTextareaAutosize matAutosizeMinRows=1 class="code" style="overflow:hidden"></textarea>
+                                        </div>
+                                    </mat-form-field>
+
+                                    <div class="button-wrapper" fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="SAVE" (click)="export()" *ngIf="isSigned">
+                                            SAVE
+                                        </button>
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="SIGN TX" (click)="signPsbt()" *ngIf="!isSigned&&!isCompleted" [disabled]="!psbt">
+                                            SIGN TX
+                                        </button>
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="GET COMBINED" (click)="combinePsbt()" *ngIf="isSigned&&!isCompleted">
+                                            GET COMBINED
+                                        </button>
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="GET PUSHED" (click)="stepReset(stepper)" *ngIf="isSigned&&isCompleted">
+                                            GET PUSHED
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                    <div class="notice-header">
+                                        <mat-icon class="icon secondary-text">notifications_active</mat-icon>
+                                        <div class="notice" fxLayout="column">
+                                            <span class="title">NOTICE</span>
+                                            <span class="description">
+                                                Singing on the created Partially Signed Bitcoin Transaction.
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="notice-table">
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_1</mat-icon>
+                                            <span class="description">
+                                                Bring a PSBT just created, not signed, from a file, the QR code or the clipboard.
+                                            </span>
+                                        </div>
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_2</mat-icon>
+                                            <span class="description">
+                                                If it is done to sign on a PSBT by yourself, you have to save & keep it in the PSBT Import Format as a file. It is strongly recommended. This signed PSBT should be sent to the member who has the right to combine all the signed PSBTs.
+                                            </span>
+                                        </div>
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_3</mat-icon>
+                                            <span class="description">
+                                                It also be get combined by yourself directly. Click 'GET COMBINED' button.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input #fileSelector (change)="getPsbtCode($event)" type="file" [hidden]="true">
+                        </form>
+                    </mat-step>
+                </mat-horizontal-stepper>
+            </div>
+        </div>
+    </div>
+</div>
+    

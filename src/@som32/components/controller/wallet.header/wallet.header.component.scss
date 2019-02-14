@@ -1,0 +1,75 @@
+@import "src/@fuse/scss/fuse";
+
+.header-extended {
+    flex-flow: row wrap;
+    height: 170px;
+
+    .account-info-header-l {
+        margin-bottom: 0;
+        padding-top: 5mm;
+
+        .title {
+            font-size: 3.5mm;
+        }
+
+        .address-wrapper {
+            margin-top: -3.7mm; 
+        }
+        
+        .addresses {
+            font-size: 4.8mm;
+            font-weight: 550;
+            margin: 0;
+       }
+
+      .action-account {
+
+        .address-wrapper {
+            margin-top: -3.7mm; 
+        }
+      }
+    }
+
+    .account-info-header-r {
+        text-align: end;
+
+        .title {
+            font-size: 4mm;
+        }
+
+        .balance {
+            font-size: 7mm;
+            font-weight: 550;
+        }
+    }
+}
+
+@include media-breakpoint('xs') {
+
+    .header-extended {
+
+        .account-info-header-l {
+
+            .title {
+                font-size: 3.3mm;
+            }
+
+            .addresses {
+                font-size: 3.6mm;
+                font-weight: 500;
+            }
+        }
+
+        .account-info-header-r {
+            text-align: left;
+
+            .title {
+                font-size: 3.3mm;
+            }
+                .balance {
+                font-size: 5.5mm;
+                font-weight: 450;
+            }
+        }
+    }
+}

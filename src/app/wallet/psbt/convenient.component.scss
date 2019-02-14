@@ -1,0 +1,287 @@
+@import "src/@fuse/scss/fuse";
+@import "src/assets/styles/common";
+
+#product {
+
+    .hidden {
+        display: none;
+    }
+
+    .top-bg {
+        height: 234px;
+    }
+
+    .content {
+
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content{
+            flex: 1 1 auto;
+            max-width: 100%;
+
+            .divider {
+                border-bottom: solid 1px #dfdfdf;
+                margin: 4mm 0 4mm 0;
+            }
+
+            .widget {
+                width: 50%;
+                padding: 15px;
+                padding-right: 20px;
+
+                .pie-chart-container {
+                    min-width: 420px;
+                    height: 430px;
+                    margin: -65px;
+                }
+
+                .footer-value {
+                    font-size: 5mm;
+                    font-weight: 500;
+                }
+            }
+
+            .step-trans-info {
+                padding: 10px 20px 10px 20px;
+
+                .row {
+                    display: flex;
+                    justify-content: space-between;
+                    line-height: 8mm;
+
+                    &.redwarn {
+                        color: red;
+                    }
+
+                    .description {
+                        color: #888;
+                        line-height: 19px;
+                        font-size: 13px;
+                        font-weight: 300;
+                    }
+                }
+            }
+
+            .transaction-field {
+                width: 50%;
+                padding: 15px;
+
+                &.sub-line {
+                    margin-top: -20px;
+                }
+
+                &.create-finish {
+                    
+                    mat-icon {
+                        font-size: 3cm;
+                        margin-left: -36px;
+                    }
+
+                    .label {
+                        text-align: center;
+                        font-size: 7mm;
+                        padding: 36px;
+                    }
+                }
+
+                .controler-wrapper {
+                    padding-bottom: 24px;
+                }
+
+                .button-wrapper {
+                    margin-left: 5px;
+                }
+                .button-wrapper > * {
+                    margin-right: 10px;
+                }
+            }
+
+            .info-container {
+                width: 50%;
+                padding: 15px;
+                padding-left: 20px;
+            }
+
+            .no-psbt-wrapper {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+
+                .icon {
+                    font-size: 3cm;
+                    min-width: 3cm;
+                    min-height: 3cm;
+                }
+
+                .notice {
+                    margin-left: 5mm;
+
+                    .title {
+                        font-size: 5.5mm;
+                        margin-bottom: 3mm;
+                    }
+
+                    .description {
+                        font-size: 13px;
+                        border-left: solid 3px #dfdfdf;
+                        padding-left: 4mm;
+                    }
+                }
+
+                @include media-breakpoint('xs') {
+
+                    .icon {
+                        font-size: 2cm;
+                        min-width: 2cm;
+                        min-height: 2cm;
+                    }
+                }
+            }
+
+            .info {
+                padding-left: 20px;
+                padding-right: 20px;
+
+                .row {
+                    display: flex;
+                    align-content: flex-start;
+
+                    // &.button-wrapper {
+                    //     padding: 8px;
+                    // }
+
+                    .label {
+                        min-width: 2cm;
+                        width: 2cm;
+                        font-size: 10px;
+                        line-height: 7.2mm;
+                    }
+
+                    .value {
+                        font-size: 13px;
+                        line-height: 8mm;
+
+                        &.action {
+                            width: 100%;
+
+                            .button-wrapper {
+                                margin-top: -10px;
+                            }
+                        }
+
+                        &.description {
+                            padding-top: 1.5mm;
+                            padding-bottom: 1.5mm;
+                            line-height: 5mm;
+                        }
+                    }
+                }
+            }
+
+            .table-history {
+                padding: 15px;
+
+                .row {
+                    border-top: solid 1px #efefef;
+
+                    .cell {
+
+                        &.datetime {
+                            line-height: 9mm;
+                            min-width: 170px;
+                            max-width: 170px;
+                        }
+                        &.name {
+                            min-width: 390px;
+                            max-width: 390px;
+                        }
+                        &.action {
+                            min-width: 120px;
+                            max-width: 120px;
+                            text-align: center;
+                        }
+                        &.written {
+                            min-width: 340px;
+                            max-width: 340px;
+                        }
+                    }
+                }
+            }
+
+            .table-history-container {
+                display: none;
+            }
+
+            @include media-breakpoint('xs') {
+
+                .balance-confirmed,
+                .balance-unconfirmed,
+                .transaction-code {
+                    padding: 0;
+                }
+
+                .transaction-field {
+                    width: 100%;
+                    padding: 0;
+
+                    &.sub-line {
+                        margin: 0;
+                    }
+                }
+    
+                .info-container {
+                    width: 100%;
+                    padding: 0;
+                    margin-top: 36px;
+                }
+
+                .info {
+                    padding: 0;
+                }
+
+                .table-history {
+                    display: none;
+                }
+
+                .table-history-container {
+                    display: block;
+                }
+            }
+        }
+
+        .mat-tab-body-content {
+            display: flex;
+        }
+
+        .mat-tab-label {
+            height: 64px;
+        }
+
+        // Temporary prefix alignment fix
+        .mat-form-field-appearance-outline .mat-form-field-prefix,
+        .mat-form-field-appearance-outline .mat-form-field-suffix {
+            top: 0;
+        }
+    }
+}
+
+.dont-break-out {
+
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+  
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  
+}

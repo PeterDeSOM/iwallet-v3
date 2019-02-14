@@ -1,0 +1,24 @@
+<table class="print-form">
+    <thead><tr><td>
+        <div class="header-space">
+            &nbsp;
+        </div>
+    </td></tr></thead>
+    <tbody><tr><td>
+        <div class="content">
+            <router-outlet></router-outlet>
+        </div>
+    </td></tr></tbody>
+    <tfoot><tr><td>
+        <div class="footer-space">
+            &nbsp;
+        </div>
+    </td></tr></tfoot>
+</table>
+
+<div *ngIf="isShow" class="header" [ngClass]="{'isShow': isShow}">
+    <button (click)="print()">Print</button>
+</div>
+<div class="footer">
+    <button onclick="window.print()">Print</button>
+</div>

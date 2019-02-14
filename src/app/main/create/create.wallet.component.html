@@ -1,0 +1,256 @@
+<div id="account-single" class="page-layout carded fullwidth">
+    <div class="back-to-home">
+        <button mat-fab routerLink="/main/start">
+            <mat-icon aria-label="Go back to Home.">home</mat-icon>
+        </button>
+    </div>
+
+    <div class="back-to-home-mini">
+        <button mat-mini-fab routerLink="/main/start">
+            <mat-icon aria-label="Go back to Home.">home</mat-icon>
+        </button>
+    </div>
+
+    <div class="top-bg"></div>
+
+    <div class="center">
+        <div class="center-header" fxLayout="column" fxLayoutAlign="center center">
+            <div class="h1">Create A New Wallet</div>
+            <div class="h3">
+                You can create either a MultiSig(Shared) or a Single account, but the Multisig includes a Single one for 
+                that reduces a needless waste of time to create your own Public-Key.
+            </div>
+        </div>
+
+        <div class="content-card">
+            <div class="content">
+                <mat-horizontal-stepper linear #stepper>
+                    <mat-step [stepControl]="formTypeSecurity" [editable]="isEditable">
+                        <form [formGroup]="formTypeSecurity">
+                            <ng-template matStepLabel class="mat-step-label">Account Type</ng-template>
+
+                            <div class="stepper-content">
+                                <mat-form-field class="selecter-field-1" appearance="outline">
+                                    <mat-label>Name or Email *</mat-label>
+                                    <input matInput type="input" formControlName="accountName">
+                                    <mat-error *ngIf="formTypeSecurity.get('accountName').errors?.required">Enter name or mail</mat-error>
+                                    <mat-error *ngIf="formTypeSecurity.get('accountName').errors?.minlength">Account name is too short. (At least 20)</mat-error>
+                                    <mat-error *ngIf="formTypeSecurity.get('accountName').errors?.maxlength">Account name is too long. (At most 70)</mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field class="selecter-field-2" appearance="outline" floatLabel="always">
+                                    <mat-label>Network</mat-label>
+                                    <mat-select #network formControlName="network">
+                                        <mat-option [value]="'mainnet'">Main network ( for the real money transaction )</mat-option>
+                                        <mat-option [value]="'testnet'">Test network ( for some testing )</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <div class="password-wrapper">
+                                    <div class="password-status">
+                                        <!--@angular-material-extensions/password-strength's main component-->
+                                        <mat-password-strength #passwordComponent [enableDigitRule]="true" [password]="password.value"></mat-password-strength>
+                                        <!--Password's strength info-->
+                                        <mat-password-strength-info [passwordComponent]="passwordComponent" fxLayoutAlign="scenter center"></mat-password-strength-info>
+                                    </div>
+                        
+                                    <div class="password-field" fxLayout="column">
+                                        <mat-form-field appearance="outline" [color]="passwordComponent.color">
+                                            <mat-label>Password *</mat-label>
+                                            <input matInput #password type="password" formControlName="password">
+                                            <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                                            <mat-hint align="end" aria-live="polite">{{ password.value.length }} / 25</mat-hint>
+                                            <mat-error *ngIf="formTypeSecurity.get('password').hasError('required')">Password is required</mat-error>
+                                            <mat-error *ngIf="formTypeSecurity.get('password').hasError('minlength')">contains at least 8 characters</mat-error>
+                                            <mat-error *ngIf="formTypeSecurity.get('password').hasError('maxlength')">contains at most 50 characters</mat-error>
+                                            <mat-error *ngIf="formTypeSecurity.get('password').hasError('nodigit')">contains at least one digit character</mat-error>
+                                            <mat-error *ngIf="formTypeSecurity.get('password').hasError('nolower')">contains at least one lower character</mat-error>
+                                            <mat-error *ngIf="formTypeSecurity.get('password').hasError('noupper')">contains at least one upper character</mat-error>
+                                            <mat-error *ngIf="formTypeSecurity.get('password').hasError('nospecial')">contains at least one special character</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Password (Confirm) *</mat-label>
+                                            <input matInput type="password" formControlName="passwordc" (keyup.enter)='(!formTypeSecurity.invalid ? stepIn(stepper) : return)'>
+                                            <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                                            <mat-error *ngIf="formTypeSecurity.get('passwordc').hasError('required')">Password confirmation is required</mat-error>
+                                            <mat-error *ngIf="formTypeSecurity.get('passwordc').hasError('notmatched')">Passwords must match</mat-error>
+                                        </mat-form-field>
+
+                                        <mat-divider class="section-devider"></mat-divider>
+                                    </div>
+                                </div>
+                    
+                                <div class="button-wrapper">
+                                    <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CONTINUE TO CREATE A WALLET" [disabled]="formTypeSecurity.invalid" (click)="stepIn(stepper)">
+                                        CONTINUE TO CREATE A WALLET
+                                    </button>
+
+                                    <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" [routerLink]="[ '/main/start' ]">
+                                        CANCEL
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+
+                    <mat-step [stepControl]="formSavingWallet" [editable]="isEditable">
+                        <form [formGroup]="formSavingWallet">
+                            <ng-template matStepLabel class="mat-step-label">Saving wallet</ng-template>
+
+                            <div class="stepper-content">
+                                <mat-form-field class="wallet-file" appearance="outline">
+                                    <div class="content">
+                                        <mat-icon class="main-icon">folder</mat-icon>
+
+                                        <section class="action-notice">
+                                            <span class="title">Store wallet file in the safe place</span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <span class="description">
+                                                Keep this Som32 Wallet file safe. You have to consider the location of your computer and files. 
+                                                If it is in a public or easily accessible site, your Wallet will not be secure.
+                                            </span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <div class="footer">
+                                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="SAVE WALLET FILE" (click)="export()">
+                                                    SAVE WALLET FILE
+                                                </button>
+                                            </div>
+                                        </section>
+                                    </div>
+                                    
+                                    <input matInput formControlName="formFieldResolver" class="hidden">
+                                </mat-form-field>
+
+                                <mat-form-field class="paper-wallet" appearance="outline">
+                                    <div class="content">
+                                        <mat-icon class="main-icon">local_printshop</mat-icon>
+
+                                        <section class="action-notice">
+                                            <span class="title">Export Som32-Wallet QR-Code</span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <span class="description">
+                                                Keep your Wallet with QR codes. A paper wallet is an offline method of storing your Wallet safe.
+                                                But, you should never share your keys and any sensitive informations on that. 
+                                            </span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <span class="footer">
+                                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="PREVIEW" (click)="openDialogWalletPreview()">
+                                                    PREVIEW
+                                                </button>
+
+                                                <div class="horizantal-spacer"></div>
+
+                                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="PRINT WALLET QR-CODE" (click)="exportToPDF()">
+                                                    EXPORT TO PDF
+                                                </button>
+                                            </span>
+                                        </section>
+                                    </div>
+                                    
+                                    <input matInput formControlName="formFieldResolver" class="hidden">
+                                </mat-form-field>
+                            </div>
+
+                            <div class="stepper-footer">
+                                <mat-checkbox class="check-box" formControlName="fileKept" (change)="checkFileKept()" (keyup.enter)='(!formSavingWallet.invalid ? stepIn(stepper) : return)'>I have kept my Som32-Wallet in the safe place.</mat-checkbox>
+
+                                <input matInput formControlName="formStoringResolver" class="hidden">
+
+                                <div class="button-wrapper thin">
+                                    <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CONTINUE TO FINISH" [disabled]="formSavingWallet.invalid" (click)="stepIn(stepper)">
+                                        CONTINUE TO FINISH
+                                    </button>
+
+                                    <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" [routerLink]="[ '/main/start' ]">
+                                        CANCEL
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+
+                    <mat-step [stepControl]="formFinished" [editable]="isEditable">
+                        <form [formGroup]="formFinished">
+                            <ng-template matStepLabel class="mat-step-label">Done</ng-template>
+
+                            <div class="stepper-content form-finished">
+                                <div class="header" fxLayout="row" fxLayoutAlign="center center">
+                                    <mat-icon class="header-icon">account_balance_wallet</mat-icon>
+
+                                    <div class="text">
+                                        <span class="wrapper">Your Som32-Wallet for a <span class="type"> {{ walletTypeName }} </span> has been created successfully.</span>
+                                    </div>
+                                </div>
+
+                                <div class="vertical-spacer"></div>
+
+                                <mat-form-field class="wallet-file" appearance="outline">
+                                    <div class="content">
+                                        <mat-icon class="main-icon">folder</mat-icon>
+
+                                        <section class="action-notice">
+                                            <span class="title">Open This Wallet</span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <span class="description">
+                                                Get started exploring to the Bitcoin network with your Som32 Wallet directly.
+                                                Som32 Wallet is providing easily accessible functionalities.  
+                                            </span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <div class="footer">
+                                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="OPEN THIS WALLET" (click)="openWWallet()">
+                                                    OPEN
+                                                </button>
+                                            </div>
+                                        </section>
+                                    </div>
+                                    
+                                    <input matInput formControlName="formFieldResolver" class="hidden">
+                                </mat-form-field>
+
+                                <mat-form-field class="paper-wallet" appearance="outline">
+                                    <div class="content">
+                                        <mat-icon class="main-icon">local_printshop</mat-icon>
+
+                                        <section class="action-notice">
+                                            <span class="title">Create Another Wallet</span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <span class="description">
+                                                You may need to create another Som32 Wallet for the purpose of another business or personal. 
+                                                Go to the start page and get it more.
+                                            </span>
+
+                                            <div class="vertical-spacer"></div>
+
+                                            <span class="footer">
+                                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CREATE ANOTHER WALLET" (click)="stepReset(stepper)">
+                                                    CREATE
+                                                </button>
+                                            </span>
+                                        </section>
+                                    </div>
+                                    
+                                    <input matInput formControlName="formFieldResolver" class="hidden">
+                                </mat-form-field>
+                            </div>
+                        </form>
+                    </mat-step>
+                </mat-horizontal-stepper>
+            </div>
+        </div>
+    </div>
+</div>

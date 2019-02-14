@@ -1,0 +1,143 @@
+@import "src/@fuse/scss/fuse";
+@import "src/assets/styles/common";
+
+#transactions {
+
+    .top-bg {
+        height: 234px;
+    }
+
+    .content {
+
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content{
+            flex: 1 1 auto;
+            max-width: 100%;
+
+            .table-transaction {
+                width: 100%;
+
+                .row {
+                    min-height: 9mm;
+                    border-top: solid 1px #efefef;
+            
+                    .icon-container {
+                        border: solid 1px red;
+                        min-width: 74px;
+                        width: 74px;
+                    }
+            
+                    .value {
+            
+                        &.indicator {
+                            color: darkgray;
+                            font-size: 11px;
+                            min-width: 32px;
+                            width: 32px;
+                        }
+            
+                        &.addr {
+                            min-width: 9cm;
+                            width: 9cm;
+                        }
+            
+                        &.time {
+                            min-width: 5cm;
+                            width: 5cm;
+                        }
+            
+                        &.amount {
+                            text-align: end;
+                            min-width: 5cm;
+                            width: 5cm;
+                        }
+            
+                        &.sent {
+                            color: coral
+                        }
+                    }
+            
+                    .indicator {
+            
+                        &.from {
+                            color: cadetblue
+                        }
+            
+                        &.to {
+                            color: coral
+                        }
+            
+                        &.confirming {
+                            margin-right: 12px;
+                            color: gold;
+                        }
+                    }
+                }
+            }
+
+            .table-transaction-break {
+                display: none;
+                width: 100%;
+
+                .info {
+    
+                    .divider {
+                        border-bottom: solid 1px #dfdfdf;
+                        margin: 4mm 0 4mm 0;
+                    }
+
+                    .row {
+                        display: flex;
+                        align-content: flex-start;
+    
+                        .label {
+                            min-width: 1.5cm;
+                            width: 1.5cm;
+                            font-size: 10px;
+                            line-height: 7.2mm;
+
+                            &.sent {
+                                color: coral
+                            }
+                        }
+    
+                        .value {
+                            font-size: 13px;
+                            line-height: 8mm;
+
+                            &.sent {
+                                color: coral
+                            }
+                        }
+                    }
+                }
+            }
+
+            @include media-breakpoint('xs') {
+
+                .table-transaction {
+                    display: none;
+                }
+
+                .table-transaction-break {
+                    display: block;
+                }
+            }
+        }
+
+        .mat-tab-body-content {
+            display: flex;
+        }
+
+        .mat-tab-label {
+            height: 64px;
+        }
+
+        // Temporary prefix alignment fix
+        .mat-form-field-appearance-outline .mat-form-field-prefix,
+        .mat-form-field-appearance-outline .mat-form-field-suffix {
+            top: 0;
+        }
+    }
+}

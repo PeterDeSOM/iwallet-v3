@@ -1,0 +1,173 @@
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+
+    <div class="center">
+        
+        <wallet-header></wallet-header>
+        
+        <div class="content-card">
+            <div class="content">
+                <mat-horizontal-stepper linear #stepper>
+                    <mat-step [stepControl]="formTransactionInfo" [editable]="isEditable">
+                        <ng-template matStepLabel>Transaction Info</ng-template>
+
+                        <form [formGroup]="formTransactionInfo">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>To</mat-label>
+                                        <mat-icon matSuffix class="secondary-text">phone</mat-icon>
+                                        <input #to formControlName="to" matInput placeholder="Paste or scan an address">
+                                        <mat-error *ngIf="formTransactionInfo.get('to').errors?.required">Recipient's address is required.</mat-error>
+                                        <mat-error *ngIf="
+                                            formTransactionInfo.get('to').errors?.minlength ||
+                                            formTransactionInfo.get('to').errors?.pattern ||
+                                            formTransactionInfo.get('to').hasError('invalidaddress')
+                                        ">Invalid bitcoin address.</mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Amount</mat-label>
+                                        <input #amount matInput formControlName="amount" placeholder="0.0" (click)="onAmount($event)">
+                                        <input matInput formControlName="curbalance" [hidden]="true">
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').errors?.required">Payment amount is required.</mat-error>
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').errors?.pattern">Invalid amount.</mat-error>
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').hasError('notallowedzero')">Not accepted amount 0.</mat-error>
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').hasError('notenoughbalance')">Not enough balance.</mat-error>
+                                    </mat-form-field>
+                                    
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Description</mat-label>
+                                        <textarea matInput #description placeholder="What's this transaction for? (Optional)"
+                                                name="description"
+                                                formControlName="description"
+                                                rows="3">
+                                        </textarea>
+                                    </mat-form-field>
+
+                                    <div fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CONTINUE TO CREATE TX" [disabled]="formTransactionInfo.invalid" (click)="stepIn(stepper)">
+                                            CONTINUE TO CREATE TX
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+
+                    <mat-step [stepControl]="formConfirmation" [editable]="isEditable">
+                        <ng-template matStepLabel>Confirmation</ng-template>
+
+                        <form [formGroup]="formConfirmation">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Transaction Info</mat-label>
+
+                                        <div class="step-trans-info">
+                                            <div class="row">
+                                                <span class="label">To</span>
+                                                <span class="value">{{ to.value }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row">
+                                                <span class="label">Amount</span>
+                                                <span class="value">{{ amount.value | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Fee</span>
+                                                <span class="value">{{ txtotalfee | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row" [ngClass]="{'redwarn': notEnoughBalance ? true : false}">
+                                                <span class="label">Total</span>
+                                                <span class="value">{{ sum | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row">
+                                                <span class="label">Description</span>
+                                                <span class="value"></span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="description">{{ description.value }}</span>
+                                            </div>
+                                        </div>
+
+                                        <input matInput #confirmamount formControlName="amount" style="width: 0;">
+                                        <input matInput #curbalance formControlName="curbalance" [hidden]="true">
+                                        <input matInput formControlName="verified" [hidden]="true">
+                                        <mat-error *ngIf="formConfirmation.get('amount').hasError('notenoughbalance')">Not enough balance.</mat-error>
+                                    </mat-form-field>
+
+                                    <div class="button-wrapper" fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CREATE TX" [disabled]="formConfirmation.invalid" (click)="createPsbt(false)" *ngIf="isShared">
+                                            CREATE TX
+                                        </button>
+
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" (click)="stepReset(stepper)">
+                                            CANCEL
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+
+                    <mat-step [stepControl]="formFinished" [editable]="isEditable">
+                        <ng-template matStepLabel>Finished</ng-template>
+
+                        <form [formGroup]="formFinished">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Transaction Code</mat-label>
+
+                                        <div class="transaction-code" fxLayout="column">
+                                            <div class="header" fxLayout="row" fxLayoutAlign="space-between center">
+                                                <span>{{ signed ? 'Sgined' : 'Unsgined' }}</span>
+                                                <div class="menu-bar">
+                                                    <button mat-icon-button [matTooltip]="codeButtonTooltip" (click)="convertCode()">
+                                                        <mat-icon aria-label="Convert Code">swap_horizontal_circle</mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(code)">
+                                                        <mat-icon aria-label="Convert Code">library_books</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <textarea #code matInput formControlName="code" matTextareaAutosize matAutosizeMinRows=1 class="code" style="overflow:hidden"></textarea>
+                                        </div>
+                                    </mat-form-field>
+
+                                    <div class="button-wrapper" fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="SAVE" (click)="export()">
+                                            SAVE
+                                        </button>
+
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="GET SIGNED" (click)="signPsbt(true)" *ngIf="isShared">
+                                            GET SIGNED
+                                        </button>
+
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" (click)="stepReset(stepper)">
+                                            CANCEL
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+                </mat-horizontal-stepper>
+            </div>
+        </div>
+    </div>
+</div>
+    

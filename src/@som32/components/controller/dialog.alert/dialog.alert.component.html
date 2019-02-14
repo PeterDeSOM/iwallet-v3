@@ -1,0 +1,27 @@
+<div class="dialog-content-wrapper">
+    <mat-toolbar class="mat-accent m-0">
+        <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">{{ !!title ? title : 'Password verification' }}</span>
+            <button mat-icon-button (click)="action(button.includes('CANCEL')?'CANCEL':'NO')" aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div mat-dialog-content class="p-24 m-0" fusePerfectScrollbar>
+        <mat-form-field appearance="outline" *ngIf="!!desc">
+            <div class="desc" [innerHTML]="desc"></div>
+            <input matInput [hidden]="true">
+        </mat-form-field>
+        <div class="message" [innerHTML]="message" *ngIf="!!message"></div>
+    </div>
+    
+    <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="center center">
+        <div class="button-wrapper">
+            <button mat-raised-button type="button" color="accent" aria-label="OK" (click)="action('OK')" *ngIf="button.includes('OK')">OK</button>
+            <button mat-raised-button type="button" color="accent" aria-label="YES" (click)="action('YES')" *ngIf="button.includes('YES')">YES</button>
+            <button mat-raised-button type="button" color="accent" aria-label="NO" (click)="action('NO')" *ngIf="button.includes('NO')">NO</button>
+            <button mat-raised-button type="button" color="accent" aria-label="CANCEL" (click)="action('CANCEL')" *ngIf="button.includes('CANCEL')">CANCEL</button>
+        </div>
+    </div>
+</div>

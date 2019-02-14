@@ -1,0 +1,23 @@
+<div class="header-extended accent" fxLayout="row" fxLayoutAlign="space-between center">
+    <div class="account-info-header-l" fxLayout="column">
+        <div class="title">{{ accountName }}</div>
+        <div class="title" *ngIf="selectedAddressType == 'shared' && accountName != selectedAddressName">{{ selectedAddressName }}</div>
+        <div class="address-wrapper">
+            <form [formGroup]="formAccount">
+                <mat-form-field floatLabel="never">
+                    <mat-select disableOptionCentering class="addresses" placeholder="Select to open" formControlName="addresses">
+                        <mat-option *ngFor="let account of accounts" [value]="account.opened">
+                            {{ accounts.length > 1 ? (account.opened + (account.type == 'single' ? ' (Single)' : ' (MultiSig)')) : account.opened }}
+                        </mat-option>
+                    </mat-select>
+                    <input matInput formControlName="fakefield" [hidden]="true">
+                </mat-form-field>
+            </form>
+        </div>
+    </div>
+
+    <div class="account-info-header-r" fxLayout="column">
+        <span class="title">Current Balance ({{ som32Config.account.currency | uppercase }})</span>
+        <span class="balance">{{ balance | number:'1.8-8' }}</span>
+    </div>
+</div>

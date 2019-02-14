@@ -1,0 +1,187 @@
+@import "src/@fuse/scss/fuse";
+@import "src/assets/styles/common";
+
+#app-start {
+
+    .hidden {
+        display: none;
+    }
+
+    .header {
+        padding: 24px;
+        height: 600px;
+        min-height: 600px;
+        background-color: #2D323D;
+
+        @include media-breakpoint('xs') {
+            height: 400px;
+            min-height: 400px;
+        }
+
+        .hero-text {
+            color: white;
+            height: 320px;
+
+            @include media-breakpoint('xs') {
+                height: 180px;
+            }
+
+            .h1 {
+                font-size: 52px;
+                font-weight: 800;
+                letter-spacing: 0.01em;
+                text-align: center;
+
+                @include media-breakpoint('xs') {
+                    font-size: 38px;
+                }
+            }
+
+            .h2 {
+                font-size: 42px;
+                font-weight: 400;
+                letter-spacing: 0.01em;
+                text-align: center;
+
+                @include media-breakpoint('xs') {
+                    font-size: 24px;
+                }
+            }
+
+            .h3 {
+                color: rgba(255, 255, 255, 0.75);
+                max-width: 520px;
+                text-align: center;
+                margin-top: 16px;
+                font-weight: 300;
+                letter-spacing: 0.05em;
+
+                @include media-breakpoint('xs') {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+
+    .price-tables {
+        flex: 1 0 auto;
+        margin-top: -160px;
+
+        @include media-breakpoint('xs') {
+            margin-top: -115px;
+        }
+
+        .price-table {
+            min-width: 280px;
+            width: 380px;
+            border-radius: 8px;
+
+            .package-type {
+                text-align: center;
+                font-weight: bold;
+            }
+
+            .label-content {
+                padding: 16px 32px 18px 32px;
+
+                .title {
+                    font-size: 21px;
+                    margin-bottom: 10px; 
+                }
+
+                .content {
+                    .label-icon {
+                        opacity: .5;
+                        margin: 0 48px 0 7px;
+                        @include md-icon-size(58px);
+                    }
+                }
+            }
+
+            .button-stage {
+                padding-bottom: 16px;
+
+                .button-hover {
+                    padding: 0px 32px 16px 32px;
+                    display: inline-flex;
+    
+                    &:hover {
+                        
+                        .button-content {
+                            border: none;
+                            @include mat-elevation(12);
+                        }
+                    }
+    
+                    .button-content {
+                        cursor: pointer;
+                        color: white;
+                        min-height: 182px;
+                        padding: 26px 32px 26px 32px;
+                        border-radius: 4px;
+                        transition: box-shadow 200ms ease-in-out;
+                        @include mat-elevation(1);
+    
+                        &.web-bg {
+                            background: mat-color($mat-blue, 500);
+                        }
+
+                        &.android-bg {
+                            background: mat-color($mat-green, 500);
+                        }
+
+                        &.firebase-bg {
+                            background: mat-color($mat-amber, 800);
+                        }
+
+                        &.cloud-bg {
+                            background: mat-color($mat-blue-grey, 500);
+                        }
+    
+                        .title, .description {
+                            padding-bottom: 10px;
+                        }
+
+                        .title {
+                            font-size: 21px;
+                        }
+
+                        .button-icon {
+                            margin-left: 10px;
+                            color: white;
+                            @include md-icon-size(24px);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .faq {
+        flex: 1 0 auto;
+        margin: 96px auto;
+        max-width: 840px;
+
+        .title {
+            font-size: 32px;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 64px;
+            padding: 0 16px;
+        }
+
+        .item {
+            padding: 24px;
+
+            .question {
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+
+            .answer {
+                font-size: 16px;
+                line-height: 1.5;
+            }
+        }
+    }
+}

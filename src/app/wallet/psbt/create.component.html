@@ -1,0 +1,247 @@
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+
+    <div class="center">
+        
+        <wallet-header></wallet-header>
+        
+        <div class="content-card">
+            <div class="content">
+                <mat-horizontal-stepper linear #stepper>
+                    <mat-step [stepControl]="formTransactionInfo" [editable]="isEditable">
+                        <ng-template matStepLabel class="mat-step-label">Transaction Info</ng-template>
+
+                        <form [formGroup]="formTransactionInfo">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>To</mat-label>
+                                        <input #to formControlName="to" matInput placeholder="Paste or scan an address">
+                                        <mat-error *ngIf="formTransactionInfo.get('to').errors?.required">Recipient's address is required.</mat-error>
+                                        <mat-error *ngIf="
+                                            formTransactionInfo.get('to').errors?.minlength ||
+                                            formTransactionInfo.get('to').errors?.pattern ||
+                                            formTransactionInfo.get('to').hasError('invalidaddress')
+                                        ">Invalid bitcoin address.</mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Amount</mat-label>
+                                        <input #amount matInput formControlName="amount" placeholder="0.0">
+                                        <input matInput formControlName="curbalance" [hidden]="true">
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').errors?.required">Payment amount is required.</mat-error>
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').errors?.pattern">Invalid amount.</mat-error>
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').hasError('notallowedzero')">Not accepted amount 0.</mat-error>
+                                        <mat-error *ngIf="formTransactionInfo.get('amount').hasError('notenoughbalance')">Not enough balance.</mat-error>
+                                    </mat-form-field>
+                                    
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Description</mat-label>
+                                        <textarea matInput #description placeholder="What's this transaction for? (Optional)"
+                                                name="description"
+                                                formControlName="description"
+                                                rows="3">
+                                        </textarea>
+                                    </mat-form-field>
+
+                                    <div fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CONTINUE TO CREATE TX" [disabled]="formTransactionInfo.invalid" (click)="stepIn(stepper)">
+                                            CONTINUE TO CREATE TX
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                    <div class="notice-header">
+                                        <mat-icon class="icon secondary-text">notifications_active</mat-icon>
+                                        <div class="notice" fxLayout="column">
+                                            <span class="title">NOTICE</span>
+                                            <span class="description">
+                                                Creating Partially Signed Bitcoin Transaction in offline.
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="notice-table">
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_1</mat-icon>
+                                            <span class="description">
+                                                Check the PSBT you have a plan to spend is already created by another participents.
+                                            </span>
+                                        </div>
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_2</mat-icon>
+                                            <span class="description">
+                                                Check the account balance with all the previously created PSBTs how much of the amount will be spent. 
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+
+                    <mat-step [stepControl]="formConfirmation" [editable]="isEditable">
+                        <ng-template matStepLabel class="mat-step-label">Confirmation</ng-template>
+
+                        <form [formGroup]="formConfirmation">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Transaction Info</mat-label>
+
+                                        <div class="step-trans-info">
+                                            <div class="row">
+                                                <span class="label">To</span>
+                                                <span class="value">{{ to.value }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row">
+                                                <span class="label">Amount</span>
+                                                <span class="value">{{ amount.value | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="label">Fee</span>
+                                                <span class="value">{{ txtotalfee | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row" [ngClass]="{'redwarn': notEnoughBalance ? true : false}">
+                                                <span class="label">Total</span>
+                                                <span class="value">{{ sum | satoshiToBitcoin | number:'1.8-8' }}</span>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="row">
+                                                <span class="label">Description</span>
+                                                <span class="value"></span>
+                                            </div>
+                                            <div class="row">
+                                                <span class="description">{{ description.value }}</span>
+                                            </div>
+                                        </div>
+
+                                        <input matInput #confirmamount formControlName="amount" style="width: 0;">
+                                        <input matInput #curbalance formControlName="curbalance" [hidden]="true">
+                                        <input matInput formControlName="verified" [hidden]="true">
+                                        <mat-error *ngIf="formConfirmation.get('amount').hasError('notenoughbalance')">Not enough balance.</mat-error>
+                                    </mat-form-field>
+
+                                    <div class="button-wrapper" fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CREATE TX" [disabled]="formConfirmation.invalid" (click)="createPsbt(false)" *ngIf="isShared">
+                                            CREATE TX
+                                        </button>
+
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" (click)="stepReset(stepper)">
+                                            CANCEL
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                    <div class="notice-header">
+                                        <mat-icon class="icon secondary-text">notifications_active</mat-icon>
+                                        <div class="notice" fxLayout="column">
+                                            <span class="title">NOTICE</span>
+                                            <span class="description">
+                                                Creating Partially Signed Bitcoin Transaction in offline.
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="notice-table">
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_1</mat-icon>
+                                            <span class="description">
+                                                Check the transaction fee which will be paid to the miners and the total amount.
+                                            </span>
+                                        </div>
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_2</mat-icon>
+                                            <span class="description">
+                                                Save & keep this transaction information. More detail information will be displayed in the next step. 
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+
+                    <mat-step [stepControl]="formFinished" [editable]="isEditable">
+                        <ng-template matStepLabel class="mat-step-label">Finished</ng-template>
+
+                        <form [formGroup]="formFinished">
+                            <div class="step-content" fxLayout="row wrap" fusePerfectScrollbar>
+                                <div class="transaction-field" fxLayout="column">
+                                    <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                        <mat-label>Transaction Code</mat-label>
+
+                                        <div class="transaction-code" fxLayout="column">
+                                            <div class="header" fxLayout="row" fxLayoutAlign="space-between center">
+                                                <span>{{ signed ? 'Sgined' : 'Unsgined' }}</span>
+                                                <div class="menu-bar">
+                                                    <button mat-icon-button [matTooltip]="codeButtonTooltip" (click)="convertCode()">
+                                                        <mat-icon aria-label="Convert Code">swap_horizontal_circle</mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button matTooltip="Copy to clipboard" (click)="copyToClipboard(code)">
+                                                        <mat-icon aria-label="Convert Code">library_books</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <textarea #code matInput formControlName="code" matTextareaAutosize matAutosizeMinRows=1 class="code" style="overflow:hidden"></textarea>
+                                        </div>
+                                    </mat-form-field>
+
+                                    <div class="button-wrapper" fxLayoutAlign="center">
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="SAVE" (click)="export()">
+                                            SAVE
+                                        </button>
+
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="GET SIGNED" (click)="signPsbt(true)" *ngIf="isShared">
+                                            GET SIGNED
+                                        </button>
+
+                                        <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="CANCEL" (click)="stepReset(stepper)">
+                                            CANCEL
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="info-container" fxLayout="column">
+                                    <div class="notice-header">
+                                        <mat-icon class="icon secondary-text">notifications_active</mat-icon>
+                                        <div class="notice" fxLayout="column">
+                                            <span class="title">NOTICE</span>
+                                            <span class="description">
+                                                Creating Partially Signed Bitcoin Transaction in offline.
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="notice-table">
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_1</mat-icon>
+                                            <span class="description">
+                                                This PSBT's transaction code was generated in hexadecimal encoded. You may need to convert it to base64 encoded code for the direct use of it in the bitcoin network. Click <span><mat-icon class="secondary-text" style="font-size:16px;width:16px;height:16px;">swap_horizontal_circle</mat-icon></span> button, transaction code will be converted.
+                                            </span>
+                                        </div>
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_2</mat-icon>
+                                            <span class="description">
+                                                To be shared this PSBT information to other members (participants) of this MultiSig account, you have to save & keep it in the PSBT Import Format as a file. It is strongly recommended.
+                                            </span>
+                                        </div>
+                                        <div class="row" fxLayoutAlign="start start">
+                                            <mat-icon class="icon secondary-text">filter_3</mat-icon>
+                                            <span class="description">
+                                                It also be get signed by yourself directly. Click 'GET SIGNED' button.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </mat-step>
+                </mat-horizontal-stepper>
+            </div>
+        </div>
+    </div>
+</div>
+    

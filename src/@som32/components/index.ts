@@ -1,0 +1,5 @@
+export * from './controller/dialog.alert/dialog.alert.component'
+export * from './controller/dialog.qrcode.scanner/dialog.qrcode.scanner.component'
+export * from './controller/dialog.passphrase/dialog.passphrase.component'
+export * from './controller/icon.component '
+export * from './controller/wallet.header/wallet.header.component'

@@ -1,0 +1,304 @@
+<div id="product" class="page-layout carded fullwidth inner-scroll">
+    <div class="top-bg accent"></div>
+
+    <div class="center">
+        
+        <wallet-header></wallet-header>
+        
+        <div class="content-card">
+            <div class="content">
+                <mat-tab-group #tabgroup fxFlex>
+                    <mat-tab label="Address Balance">
+                        <div class="tab-content p-24" fxLayout="row wrap" fusePerfectScrollbar>
+                            <fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+                                <div class="py-8 mh-16" fxLayoutAlign="start center">
+                                    <span>Received / Sent, (%)</span>
+                                </div>
+
+                                <div class="pie-chart-container" fxLayoutAlign="center center">
+                                    <ngx-charts-pie-chart
+                                        *fuseIfOnDom
+                                        [scheme]="balancePie.scheme"
+                                        [results]="balancePieData.mainChart[balancePie.currentRange]"
+                                        [legend]="balancePie.showLegend"
+                                        [explodeSlices]="balancePie.explodeSlices"
+                                        [labels]="balancePie.labels"
+                                        [doughnut]="balancePie.doughnut"
+                                        [gradient]="balancePie.gradient"
+                                        (select)="balancePie.onSelect($event)">
+                                    </ngx-charts-pie-chart>
+                                </div>
+                            </fuse-widget>
+
+                            <div class="info-container" fxLayout="column">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Confirmed</mat-label>
+
+                                    <div class="balance-confirmed">
+                                        <div class="row">
+                                            <span class="label"><a [routerLink]="[ '/wallet/trans' ]">Transaction(s)</a></span>  
+                                            <span class="value">{{ balance.n_tx | number }}</span>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="row"><span class="label">Received</span>        <span class="value">{{ balance.total_received | number:'1.8-8' }}</span></div>
+                                        <div class="row"><span class="label">Sent</span>            <span class="value">{{ balance.total_sent | number:'1.8-8' }}</span></div>
+                                        <div class="row"><span class="label">Current Balance</span> <span class="value">{{ balance.balance | number:'1.8-8' }}</span></div>
+                                    </div>
+
+                                    <input matInput [hidden]="true">
+                                </mat-form-field>
+
+                                <mat-form-field class="balance-unconfirmed" appearance="outline" floatLabel="always" class="w-100-p">
+                                    <mat-label>Unconfirmed (Confirming)</mat-label>
+
+                                    <div class="balance-unconfirmed">
+                                        <div class="row"><span class="label">Transaction(s)</span>     <span class="value">{{ balance.unconfirmed_n_tx | number }}</span></div>
+                                        <div class="divider"></div>
+                                        <div class="row"><span class="label">Balance</span>  <span class="value">{{ balance.unconfirmed_balance | number:'1.8-8' }}</span></div>
+                                    </div>
+
+                                    <input matInput [hidden]="true">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                    <mat-tab label="Account(s)">
+                        <div class="tab-content p-24" fxLayout="column" fusePerfectScrollbar>
+                            <div class="account-action-wrapper" fxLayout="row wrap" fxLayoutAlign="center start">
+                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="IMPORT MUTISIG" (click)="importType='shared';fileSelector.click();" *ngIf="!isShared">
+                                    IMPORT MUTISIG
+                                </button>
+
+                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="EXPORT PUBLIC-KEY" (click)="export('pubkey')" *ngIf="!isShared">
+                                    EXPORT PUBLIC-KEY
+                                </button>
+
+                                <!-- <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="EXPORT MUTISIG" (click)="export('single')" *ngIf="!isShared">
+                                    EXPORT SINGLE
+                                </button> -->
+
+                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="EXPORT SINGLE" (click)="export('shared')" *ngIf="isShared">
+                                    EXPORT MUTISIG
+                                </button>
+
+                                <button mat-raised-button type="button" class="submit-button" color="accent" aria-label="EXPORT ALL" (click)="export('all')" *ngIf="isShared">
+                                    EXPORT ALL
+                                </button>
+
+                                <input #fileSelector (change)="import($event)" type="file" class="hidden">
+                            </div>
+
+                            <mat-form-field appearance="outline" floatLabel="always" class="w-100-p" *ngFor="let single of singles">
+                                <mat-label>Single (Master): {{ single.name }}</mat-label>
+
+                                <div class="account-info-container">
+                                    <div class="qrcode-wrapper" fxLayout="row wrap" fxLayoutAlign="center start">
+                                        <div class="qrcode-simple w-175">
+                                            <span class="qrcode-content-title">Public Key</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="publicKey" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <span class="code-string">{{ publicKey }}</span>
+                                        </div>
+                                    
+                                        <div class="qrcode-simple w-175">
+                                            <span class="qrcode-content-title">Private Key (WIF)</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="wif" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <span class="code-string">{{ wif }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info" fxLayout="column">
+                                        <div class="row" [ngClass]="{'first': true}">
+                                            <span class="label">Mnemonic</span>  
+                                            <span class="value">{{ accountInfo.mnemonic }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Master Seed</span>  
+                                            <span class="value">{{ accountInfo.seed }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Extended Master (Private) Key</span>
+                                            <span class="value">{{ accountInfo.extmkey }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Extended Master Public Key</span>  
+                                            <span class="value">{{ accountInfo.extMkey }}</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Derived Extended Key</span>  
+                                            <span class="value">{{ accountInfo.extkey }}</span>
+                                        </div>
+                                        <div class="row" [ngClass]="{'last': true}">
+                                            <span class="label">Derived Extended Key Path & Type</span>  
+                                            <span class="value">{{ accountInfo.extkeypath }} ({{ accountInfo.extkeylevel }})</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="qrcode-wrapper-suffix" fxLayoutAlign="center start">
+                                        <div class="qrcode-medium w-250">
+                                            <span class="qrcode-content-title">A Single Account Wallet</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="forQR('single', single.address)" size="250" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <!-- <span class="code-string">&lt;Hexadecimal encoded&gt;</span> -->
+                                            <span class="code-string"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <input matInput [hidden]="true">
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" floatLabel="always" class="w-100-p" *ngFor="let shared of shareds">
+                                <mat-label>MultiSignarue (Shared): {{ shared.name }}</mat-label>
+
+                                <div class="account-info-container">
+                                    <div class="qrcode-wrapper" fxLayout="row wrap" fxLayoutAlign="center start">
+                                        <div class="qrcode-simple w-175">
+                                            <span class="qrcode-content-title">Address</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="shared.address" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <span class="code-string"></span>
+                                        </div>
+                                    
+                                        <div class="qrcode-simple w-175" *ngIf="!!shared.script.pubkey">
+                                            <span class="qrcode-content-title">ScriptPubKey</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="shared.script.pubkey" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <span class="code-string"></span>
+                                        </div>
+                                    
+                                        <div class="qrcode-simple w-175" *ngIf="!!shared.script.redeem">
+                                            <span class="qrcode-content-title">Reddem Script</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="shared.script.redeem" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <span class="code-string"></span>
+                                        </div>
+                                    
+                                        <div class="qrcode-simple w-175" *ngIf="!!shared.script.witess">
+                                            <span class="qrcode-content-title">Witness Script</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="shared.script.witess" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <span class="code-string"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info" fxLayout="column">
+                                        <div class="row" [ngClass]="{'first': true}">
+                                            <span class="label">Address (M of N Participants)</span>  
+                                            <span class="value">{{ shared.address }} ( {{ shared.m }} of {{ shared.n }} )</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">Participant's Public Key</span>  
+                                            <span class="value multi-line">
+                                                <span *ngFor="let pubkey of shared.pubkeys">{{ pubkey }}</span>
+                                            </span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="label">ScriptPubKey</span>  
+                                            <span class="value">{{ shared.script.pubkey }}</span>
+                                        </div>
+                                        <div class="row" *ngIf="!!shared.script.redeem">
+                                            <span class="label">Reddem Script</span>
+                                            <span class="value">{{ shared.script.redeem }}</span>
+                                        </div>
+                                        <div class="row" [ngClass]="{'last': true}" *ngIf="!!shared.script.witess">
+                                            <span class="label">Witness Script</span>  
+                                            <span class="value">{{ shared.script.witess }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="qrcode-wrapper-suffix" fxLayoutAlign="center start">
+                                        <div class="qrcode-medium w-250">
+                                            <span class="qrcode-content-title">A MultiSig Account Wallet</span>
+                                            <table>
+                                                <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                                <tr>
+                                                    <td></td><td class="qrcode">
+                                                        <qrcode [qrdata]="forQR('shared', shared.address)" size="250" level="M" allowEmptyString="true"></qrcode>
+                                                    </td><td></td>
+                                                </tr>
+                                                <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                            </table>
+                                            <span class="code-string"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <input matInput [hidden]="true">
+                            </mat-form-field>
+
+                            <div class="account-info-wallet">
+                                <div class="qrcode-wrapper-wallet" style="margin-bottom: 15px;">
+                                    <div class="qrcode-large w-350">
+                                        <span class="qrcode-content-title">Som32 Wallet</span>
+                                        <table>
+                                            <tr><td class="qrcode-box-tl"></td><td></td><td class="qrcode-box-tr"></td></tr>
+                                            <tr>
+                                                <td></td><td class="qrcode">
+                                                    <qrcode [qrdata]="forQR('wallet')" size="300" level="M" allowEmptyString="true"></qrcode>
+                                                </td><td></td>
+                                            </tr>
+                                            <tr><td class="qrcode-box-bl"></td><td></td><td class="qrcode-box-br"></td></tr>
+                                        </table>
+                                        <span class="code-string"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+        </div>
+    </div>
+</div>
